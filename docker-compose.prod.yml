@@ -4,6 +4,7 @@ services:
     image: jetpackpony/diet-tracker-back
     container_name: diet-tracker-back
     restart: always
+    network_mode: bridge
     expose:
       - 3000
     env_file:
