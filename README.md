@@ -48,6 +48,7 @@ To install an npm package:
   ```
   6. On production machine, to start the container with the app, run:
   ```
+  $ docker-compose pull
   $ docker-compose -f docker-compose.prod.yml up -d
   ```
   This setup works with [letsencrypt-nginx-proxy-companion](https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion) which is setup in [jetpackpony/vm-setup](https://github.com/jetpackpony/vm-setup) repo.
