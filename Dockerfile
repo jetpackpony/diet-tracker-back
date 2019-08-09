@@ -1,5 +1,7 @@
 FROM node:10-alpine
 
+RUN npm install -g nodemon
+
 ARG NODE_ENV=development
 ENV NODE_ENV=${NODE_ENV}
 

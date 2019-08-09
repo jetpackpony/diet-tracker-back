@@ -2,6 +2,7 @@ version: '3'
 services:
   app:
     build: .
+    container_name: diet-tracker-back
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
