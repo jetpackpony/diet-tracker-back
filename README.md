@@ -12,14 +12,15 @@ A backend for diet-tracker configurated for development and production setups.
   ```
 This will run the app inside a container. App is run with `nodemon` and listens to the changes in the local directory and reloads the server. Also, `nodemon` is run with `--inspect` flag so the debugger is available on port `9229`.
 
-To install a package, first install it on the host machine:
-```
-$ npm install ...
-```
-Then build the image again:
-```
-$ docker-compose -f docker-compose.dev.yml up --build
-```
+To install an npm package:
+  1. nstall it on the host machine:
+  ```
+  $ npm install --save ...
+  ```
+  2. Build the image again, renewing the node_modules directory:
+  ```
+  $ docker-compose -f docker-compose.dev.yml up --build --renew-anon-volumes
+  ```
 
 ## Deploying to production
 
