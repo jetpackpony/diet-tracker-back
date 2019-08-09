@@ -22,5 +22,4 @@ typings/
 .eslintcache
 
 # dotenv environment variables file
-.env
-.env.prod
+.env*

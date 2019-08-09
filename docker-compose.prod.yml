@@ -3,11 +3,9 @@ services:
   app:
     image: jetpackpony/diet-tracker-back
     container_name: diet-tracker-back
+    restart: always
     expose:
       - 3000
-    environment:
-      - LETSENCRYPT_EMAIL=${EMAIL}
-      - LETSENCRYPT_HOST=${HOSTNAME}
-      - VIRTUAL_HOST=${HOSTNAME}
-      - VIRTUAL_PORT=3000
+    env_file:
+      - .env.prod
     command: npm run start:prod
