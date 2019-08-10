@@ -4,9 +4,21 @@ services:
     image: jetpackpony/diet-tracker-back
     container_name: diet-tracker-back
     restart: always
-    network_mode: bridge
+    networks:
+      - web
+      - default
     expose:
       - 3000
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:${VIRTUAL_HOST}"
+      - "traefik.port=3000"
+      - "traefik.protocol=http"
     env_file:
-      - .env.prod
+      - .env
     command: npm run start:prod
+
+networks:
+  web:
+    external: true
