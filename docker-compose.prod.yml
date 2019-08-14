@@ -8,12 +8,12 @@ services:
       - web
       - default
     expose:
-      - 3000
+      - 4000
     labels:
       - "traefik.docker.network=web"
       - "traefik.enable=true"
       - "traefik.frontend.rule=Host:${VIRTUAL_HOST}"
-      - "traefik.port=3000"
+      - "traefik.port=4000"
       - "traefik.protocol=http"
     env_file:
       - .env

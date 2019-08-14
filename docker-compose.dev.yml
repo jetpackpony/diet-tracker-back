@@ -7,7 +7,7 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     ports:
-      - 3000:3000
+      - 4000:4000
       - 9229:9229
     command: npm run start:dev
     env_file:

@@ -4,14 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:dev": "nodemon --inspect -L ./index.js",
-    "start:prod": "node index.js"
+    "start:dev": "nodemon --inspect -L ./src/index.js",
+    "start:prod": "node ./src/index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "apollo-server": "^2.8.1",
     "express": "^4.17.1",
+    "graphql": "^14.4.2",
     "moment": "^2.24.0"
   }
 }
