@@ -12,3 +12,10 @@ services:
     command: npm run start:dev
     env_file:
       - .env
+  db:
+    image: couchdb:latest
+    container_name: diet-tracker-db
+    volumes:
+      - ./couchdb/data:/opt/couchdb/data
+    ports:
+      - 5984:5984
