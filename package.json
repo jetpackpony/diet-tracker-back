@@ -4,17 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:dev": "nodemon --inspect=0.0.0.0 -L ./src/index.js",
+    "start:dev": "nodemon --inspect-brk=0.0.0.0 -L ./src/index.js",
     "start:prod": "node ./src/index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "apollo-datasource": "^0.6.1",
     "apollo-server": "^2.8.1",
     "express": "^4.17.1",
     "graphql": "^14.4.2",
     "graphql-iso-date": "^3.6.1",
-    "moment": "^2.24.0"
+    "moment": "^2.24.0",
+    "nano": "^8.1.0"
   }
 }
