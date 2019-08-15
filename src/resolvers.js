@@ -24,24 +24,28 @@ const records = [
     id: "rec-0",
     foodItem: foodItems[0],
     weight: 155,
+    eatenAt: (new Date("28 Jul 2019 15:44:32")).toISOString(),
     createdAt: (new Date("28 Jul 2019 15:44:32")).toISOString(),
   },
   {
     id: "rec-1",
     foodItem: foodItems[1],
     weight: 33,
+    eatenAt: (new Date("28 Jul 2019 15:44:32")).toISOString(),
     createdAt: (new Date("28 Jul 2019 15:44:32")).toISOString(),
   },
   {
     id: "rec-2",
     foodItem: foodItems[0],
     weight: 111,
+    eatenAt: (new Date("28 Jul 2019 15:44:32")).toISOString(),
     createdAt: (new Date("28 Jul 2019 15:44:32")).toISOString(),
   },
   {
     id: "rec-3",
     foodItem: foodItems[0],
     weight: 42,
+    eatenAt: (new Date("28 Jul 2019 15:44:32")).toISOString(),
     createdAt: (new Date("28 Jul 2019 15:44:32")).toISOString(),
   },
 ];
@@ -54,10 +58,11 @@ const makeFoodItem = ({ title, calories, protein, fat, carbs }) => ({
   fat,
   carbs
 });
-const makeRecord = (foodItem, weight, createdAt) => ({
+const makeRecord = (foodItem, weight, createdAt, eatenAt) => ({
   id: `rec-${recordsId++}`,
   foodItem,
   weight,
+  eatenAt,
   createdAt
 });
 
@@ -75,15 +80,15 @@ const resolvers = {
       return newItem;
     },
     addRecord: (root, args) => {
-      const foodItem = foodItems.find((item) => item.id === foodItemId);
-      const newRec = makeRecord(foodItem, args.weight, args.createdAt);
+      const foodItem = foodItems.find((item) => item.id === args.foodItemId);
+      const newRec = makeRecord(foodItem, args.weight, args.createdAt, args.eatenAt);
       records.push(newRec);
       return newRec;
     },
     addRecordWithFoodItem: (root, args) =>{
       const foodItem = makeFoodItem(args);
       foodItems.push(foodItem);
-      const record = makeRecord(foodItem, args.weight, args.createdAt);
+      const record = makeRecord(foodItem, args.weight, args.createdAt, args.eatenAt);
       records.push(record);
       return record;
     } 

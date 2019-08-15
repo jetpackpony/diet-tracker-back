@@ -17,6 +17,7 @@ const typeDefs = gql`
     addRecord(
       foodItemId: ID!
       weight: Int!
+      eatenAt: DateTime!
       createdAt: DateTime!
     ): Record
     addRecordWithFoodItem(
@@ -26,6 +27,7 @@ const typeDefs = gql`
       fat: Float!
       carbs: Float!
       weight: Int!
+      eatenAt: DateTime!
       createdAt: DateTime!
     ): Record
   }
@@ -45,6 +47,7 @@ const typeDefs = gql`
     id: ID!
     foodItem: FoodItem!
     weight: Int!
+    eatenAt: DateTime!
     createdAt: DateTime!
   }
 `;
