@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:dev": "nodemon --inspect -L ./src/index.js",
+    "start:dev": "nodemon --inspect=0.0.0.0 -L ./src/index.js",
     "start:prod": "node ./src/index.js"
   },
   "keywords": [],
