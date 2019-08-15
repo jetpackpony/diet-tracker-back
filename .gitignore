@@ -26,3 +26,6 @@ typings/
 
 # database
 couchdb
+
+# vscode
+.vscode
