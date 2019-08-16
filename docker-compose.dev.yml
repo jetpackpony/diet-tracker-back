@@ -3,6 +3,8 @@ services:
   app:
     build: .
     container_name: diet-tracker-back
+    depends_on:
+      - db
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
