@@ -17,6 +17,7 @@
     "graphql": "^14.4.2",
     "graphql-iso-date": "^3.6.1",
     "moment": "^2.24.0",
+    "mongodb": "^3.3.0",
     "nano": "^8.1.0"
   }
 }

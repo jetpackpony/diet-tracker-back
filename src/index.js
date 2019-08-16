@@ -5,19 +5,21 @@ const { GraphQLDateTime } = require("graphql-iso-date");
 const FoodJournalAPI = require("./datasources/foodJournalAPI");
 const { initDB } = require("./db");
 
-const db = initDB();
+(async () => {
+  const { db } = await initDB();
 
-const server = new ApolloServer({
-  typeDefs,
-  dataSources: () => ({
-    foodJournalAPI: new FoodJournalAPI({ db })
-  }),
-  resolvers: {
-    DateTime: GraphQLDateTime,
-    ...resolvers,
-  }
-});
+  const server = new ApolloServer({
+    typeDefs,
+    dataSources: () => ({
+      foodJournalAPI: new FoodJournalAPI({ db })
+    }),
+    resolvers: {
+      DateTime: GraphQLDateTime,
+      ...resolvers,
+    }
+  });
 
-server.listen().then(({ url }) => {
-  console.log(`🚀  Server ready at ${url}`);
-});
+  server.listen().then(({ url }) => {
+    console.log(`🚀  Server ready at ${url}`);
+  });
+})();
