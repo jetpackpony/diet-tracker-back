@@ -76,10 +76,8 @@ const resolvers = {
     )
   },
   Mutation: {
-    addFoodItem: (root, args) => {
-      const newItem = makeFoodItem(args);
-      foodItems.push(newItem);
-      return newItem;
+    addFoodItem: (root, args, { dataSources }) => {
+      return dataSources.foodJournalAPI.createFoodItem(args);
     },
     addRecord: (root, args) => {
       const foodItem = foodItems.find((item) => item.id === args.foodItemId);

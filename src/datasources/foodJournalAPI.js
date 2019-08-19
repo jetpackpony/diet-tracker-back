@@ -51,6 +51,12 @@ class FoodJournalAPI extends DataSource {
       .toArray()
       .then((items) => items.map(idsToStrings));
   }
+
+  async createFoodItem({ title, calories, protein, fat, carbs }) {
+    return this.db.collection("foodItems")
+      .insert({ title, calories, protein, fat, carbs })
+      .then((res) => ({ id: res.insertedIds[0].toString() }));
+  }
 }
 
 module.exports = FoodJournalAPI;
