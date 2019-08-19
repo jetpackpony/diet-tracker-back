@@ -1,4 +1,5 @@
 const { DataSource } = require('apollo-datasource');
+const ObjectID = require('mongodb').ObjectID;
 
 const idsToStrings = (item) => ({
   ...item,
@@ -47,7 +48,7 @@ class FoodJournalAPI extends DataSource {
 
   async getFoodItemsByIDs(ids) {
     return this.db.collection("foodItems")
-      .find({ _id: { $in: ids } })
+      .find({ _id: { $in: ids.map(ObjectID) } })
       .toArray()
       .then((items) => items.map(idsToStrings));
   }
@@ -60,8 +61,27 @@ class FoodJournalAPI extends DataSource {
 
   async createRecord({ foodItemID, weight, eatenAt, createdAt }) {
     return this.db.collection("records")
-      .insert({ foodItemID, weight, eatenAt, createdAt })
+      .insert({ foodItemID: ObjectID(foodItemID), weight, eatenAt, createdAt })
       .then((res) => ({ id: res.insertedIds[0].toString() }));
+  }
+
+  async createRecordWithFoodItem({
+    title, calories, protein, fat, carbs,
+    weight, eatenAt, createdAt,
+  }) {
+    const { id: foodItemID } = await this.createFoodItem({
+      title,
+      calories,
+      protein,
+      fat,
+      carbs
+    });
+    return this.createRecord({
+      foodItemID: ObjectID(foodItemID),
+      weight,
+      eatenAt,
+      createdAt
+    });
   }
 }
 
