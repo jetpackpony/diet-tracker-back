@@ -39,6 +39,8 @@ services:
       MONGO_PASSWORD: ${MONGO_APP_PASSWORD}
     volumes:
       - ./mongo/init-scripts/dev:/docker-entrypoint-initdb.d
+    ports:
+      - 27017:27017
 
 volumes:
   data-volume:
