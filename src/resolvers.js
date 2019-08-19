@@ -68,7 +68,9 @@ const makeRecord = (foodItem, weight, createdAt, eatenAt) => ({
 
 const resolvers = {
   Query: {
-    getAllRecords: () => records,
+    getAllRecords: (root, args, { dataSources }) => {
+      return dataSources.foodJournalAPI.getRecords();
+    },
     getFoodItems: (root, { ids }, context) => (
       foodItems.filter((item) => ids.includes(item.id))
     )

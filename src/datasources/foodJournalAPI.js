@@ -1,5 +1,14 @@
 const { DataSource } = require('apollo-datasource');
 
+const convertIDs = (rec) => ({
+  ...rec,
+  id: rec._id.toString(),
+  foodItem: {
+    ...rec.foodItem[0],
+    id: rec.foodItem[0]._id.toString()
+  }
+})
+
 class FoodJournalAPI extends DataSource {
   constructor({ db }) {
     super();
@@ -17,12 +26,18 @@ class FoodJournalAPI extends DataSource {
   }
 
   async getRecords() {
-    this.db.list().then((list) => {
-      debugger;
-      console.log(list);
-    }).catch((err) => {
-      debugger;
-    })
+    const res = await this.db.collection("records")
+      .aggregate([{
+        $lookup: {
+          from: "foodItems",
+          localField: "foodItemID",
+          foreignField: "_id",
+          as: "foodItem"
+        }
+      }])
+      .toArray()
+      .then((recs) => recs.map(convertIDs));
+      return res;
   }
 }
 
