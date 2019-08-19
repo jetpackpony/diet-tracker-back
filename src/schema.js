@@ -30,6 +30,10 @@ const typeDefs = gql`
       eatenAt: DateTime!
       createdAt: DateTime!
     ): Record
+    updateRecord(
+      id: ID!
+      weight: Int
+    ): Record
   }
 
   scalar DateTime

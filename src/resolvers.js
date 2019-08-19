@@ -14,9 +14,12 @@ const resolvers = {
     addRecord: (root, args, { dataSources }) => {
       return dataSources.foodJournalAPI.createRecord(args);
     },
-    addRecordWithFoodItem: (root, args, { dataSources }) =>{
+    addRecordWithFoodItem: (root, args, { dataSources }) => {
       return dataSources.foodJournalAPI.createRecordWithFoodItem(args);
-    } 
+    },
+    updateRecord: (root, args, { dataSources }) => {
+      return dataSources.foodJournalAPI.updateRecord(args);
+    }
   }
 };
 

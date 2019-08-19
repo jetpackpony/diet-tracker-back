@@ -83,6 +83,18 @@ class FoodJournalAPI extends DataSource {
       createdAt
     });
   }
+
+  async updateRecord({ id, weight }) {
+    return this.db.collection("records")
+      .findOneAndUpdate(
+        { _id: ObjectID(id)},
+        { $set: { weight }},
+        { returnNewDocument: true }
+      )
+      .then((rec) => {
+        return idsToStrings(rec.value);
+      });
+  }
 }
 
 module.exports = FoodJournalAPI;
