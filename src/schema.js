@@ -15,7 +15,7 @@ const typeDefs = gql`
       carbs: Float!
     ): FoodItem
     addRecord(
-      foodItemId: ID!
+      foodItemID: ID!
       weight: Int!
       eatenAt: DateTime!
       createdAt: DateTime!

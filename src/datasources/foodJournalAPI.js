@@ -57,6 +57,12 @@ class FoodJournalAPI extends DataSource {
       .insert({ title, calories, protein, fat, carbs })
       .then((res) => ({ id: res.insertedIds[0].toString() }));
   }
+
+  async createRecord({ foodItemID, weight, eatenAt, createdAt }) {
+    return this.db.collection("records")
+      .insert({ foodItemID, weight, eatenAt, createdAt })
+      .then((res) => ({ id: res.insertedIds[0].toString() }));
+  }
 }
 
 module.exports = FoodJournalAPI;

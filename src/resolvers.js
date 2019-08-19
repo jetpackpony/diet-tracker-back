@@ -79,11 +79,8 @@ const resolvers = {
     addFoodItem: (root, args, { dataSources }) => {
       return dataSources.foodJournalAPI.createFoodItem(args);
     },
-    addRecord: (root, args) => {
-      const foodItem = foodItems.find((item) => item.id === args.foodItemId);
-      const newRec = makeRecord(foodItem, args.weight, args.createdAt, args.eatenAt);
-      records.push(newRec);
-      return newRec;
+    addRecord: (root, args, { dataSources }) => {
+      return dataSources.foodJournalAPI.createRecord(args);
     },
     addRecordWithFoodItem: (root, args) =>{
       const foodItem = makeFoodItem(args);
