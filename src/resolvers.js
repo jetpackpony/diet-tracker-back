@@ -71,8 +71,8 @@ const resolvers = {
     getAllRecords: (root, args, { dataSources }) => {
       return dataSources.foodJournalAPI.getRecords();
     },
-    getFoodItems: (root, { ids }, context) => (
-      foodItems.filter((item) => ids.includes(item.id))
+    getFoodItems: (root, { ids }, { dataSources }) => (
+      dataSources.foodJournalAPI.getFoodItemsByIDs(ids)
     )
   },
   Mutation: {

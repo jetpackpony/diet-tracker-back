@@ -1,13 +1,9 @@
 const { DataSource } = require('apollo-datasource');
 
-const convertIDs = (rec) => ({
-  ...rec,
-  id: rec._id.toString(),
-  foodItem: {
-    ...rec.foodItem[0],
-    id: rec.foodItem[0]._id.toString()
-  }
-})
+const idsToStrings = (item) => ({
+  ...item,
+  id: item._id.toString()
+});
 
 class FoodJournalAPI extends DataSource {
   constructor({ db }) {
@@ -36,8 +32,24 @@ class FoodJournalAPI extends DataSource {
         }
       }])
       .toArray()
-      .then((recs) => recs.map(convertIDs));
-      return res;
+      .then(
+        (recs) => recs.map(
+          (rec) => ({
+            ...idsToStrings(rec),
+            foodItem: {
+              ...idsToStrings(rec.foodItem[0])
+            }
+          })
+        )
+      );
+    return res;
+  }
+
+  async getFoodItemsByIDs(ids) {
+    return this.db.collection("foodItems")
+      .find({ _id: { $in: ids } })
+      .toArray()
+      .then((items) => items.map(idsToStrings));
   }
 }
 
