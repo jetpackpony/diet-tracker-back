@@ -95,6 +95,14 @@ class FoodJournalAPI extends DataSource {
         return idsToStrings(rec.value);
       });
   }
+
+  async deleteRecord(id) {
+    return this.db.collection("records")
+      .deleteOne(
+        { _id: ObjectID(id)},
+      )
+      .then(() => id);
+  }
 }
 
 module.exports = FoodJournalAPI;

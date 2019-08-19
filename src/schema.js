@@ -34,6 +34,9 @@ const typeDefs = gql`
       id: ID!
       weight: Int
     ): Record
+    deleteRecord(
+      id: ID!
+    ): ID
   }
 
   scalar DateTime

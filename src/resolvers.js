@@ -19,7 +19,10 @@ const resolvers = {
     },
     updateRecord: (root, args, { dataSources }) => {
       return dataSources.foodJournalAPI.updateRecord(args);
-    }
+    },
+    deleteRecord: (root, { id }, { dataSources }) => {
+      return dataSources.foodJournalAPI.deleteRecord(id);
+    },
   }
 };
 
