@@ -29,8 +29,6 @@ services:
   mongo:
     image: mongo
     container_name: diet-tracker-mongo
-    volumes:
-      - data-volume:/data/db
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ADMIN_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ADMIN_PASSWORD}
@@ -38,6 +36,7 @@ services:
       MONGO_USERNAME: ${MONGO_APP_USERNAME}
       MONGO_PASSWORD: ${MONGO_APP_PASSWORD}
     volumes:
+      - data-volume:/data/db
       - ./mongo/init-scripts/dev:/docker-entrypoint-initdb.d
     ports:
       - 27017:27017
