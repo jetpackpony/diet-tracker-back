@@ -5,7 +5,10 @@ const resolvers = {
     },
     getFoodItems: (root, { ids }, { dataSources }) => (
       dataSources.foodJournalAPI.getFoodItemsByIDs(ids)
-    )
+    ),
+    filterFoodItems: (root, args, { dataSources }) => {
+      return dataSources.foodJournalAPI.filterFoodItems(args);
+    }
   },
   Mutation: {
     addFoodItem: (root, args, { dataSources }) => {

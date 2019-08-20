@@ -1,10 +1,20 @@
 const { DataSource } = require('apollo-datasource');
 const ObjectID = require('mongodb').ObjectID;
+const escapeRegEx = require("escape-string-regexp");
 
 const idsToStrings = (item) => ({
   ...item,
   id: item._id.toString()
 });
+
+const buildRegexArray = (filter) => (
+  filter
+    .split(/\s/)
+    .map(escapeRegEx)
+    .map((str) => ({
+      title: new RegExp(str, "i")
+    }))
+);
 
 class FoodJournalAPI extends DataSource {
   constructor({ db }) {
@@ -49,6 +59,16 @@ class FoodJournalAPI extends DataSource {
   async getFoodItemsByIDs(ids) {
     return this.db.collection("foodItems")
       .find({ _id: { $in: ids.map(ObjectID) } })
+      .toArray()
+      .then((items) => items.map(idsToStrings));
+  }
+
+  async filterFoodItems({ filter, limit = 5 }) {
+    return this.db.collection("foodItems")
+      .find({
+        $and: buildRegexArray(filter)
+      })
+      .limit(limit)
       .toArray()
       .then((items) => items.map(idsToStrings));
   }

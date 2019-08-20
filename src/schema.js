@@ -4,6 +4,10 @@ const typeDefs = gql`
   type Query {
     getAllRecords: [Record]!
     getFoodItems(ids: [ID!]!): [FoodItem]!
+    filterFoodItems(
+      filter: String!
+      limit: Int!
+    ): [FoodItem]!
   }
 
   type Mutation {
