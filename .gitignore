@@ -23,3 +23,9 @@ typings/
 
 # dotenv environment variables file
 .env*
+
+# database
+couchdb
+
+# vscode
+.vscode

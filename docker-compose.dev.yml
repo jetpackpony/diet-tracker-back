@@ -3,12 +3,43 @@ services:
   app:
     build: .
     container_name: diet-tracker-back
+    depends_on:
+      - mongo
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     ports:
-      - 3000:3000
+      - 4000:4000
       - 9229:9229
     command: npm run start:dev
     env_file:
       - .env
+
+  mongo-express:
+    image: mongo-express
+    container_name: diet-tracker-mongo-express
+    depends_on:
+      - mongo
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_ADMIN_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_ADMIN_PASSWORD}
+
+  mongo:
+    image: mongo
+    container_name: diet-tracker-mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ADMIN_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ADMIN_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME}
+      MONGO_USERNAME: ${MONGO_APP_USERNAME}
+      MONGO_PASSWORD: ${MONGO_APP_PASSWORD}
+    volumes:
+      - data-volume:/data/db
+      - ./mongo/init-scripts/dev:/docker-entrypoint-initdb.d
+    ports:
+      - 27017:27017
+
+volumes:
+  data-volume:
