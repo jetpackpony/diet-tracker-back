@@ -41,18 +41,23 @@ class FoodJournalAPI extends DataSource {
           foreignField: "_id",
           as: "foodItem"
         }
+      }, {
+        $unwind: {
+          path: "$foodItem",
+          preserveNullAndEmptyArrays: false
+        }
       }])
       .toArray()
-      .then(
-        (recs) => recs.map(
+      .then((recs) => {
+        return recs.map(
           (rec) => ({
             ...idsToStrings(rec),
             foodItem: {
-              ...idsToStrings(rec.foodItem[0])
+              ...idsToStrings(rec.foodItem)
             }
           })
-        )
-      );
+        );
+      });
     return res;
   }
 
