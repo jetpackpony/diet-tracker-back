@@ -3,6 +3,10 @@ const { gql } = require('apollo-server');
 const typeDefs = gql`
   type Query {
     getAllRecords: [Record]!
+    recordsFeed(
+      cursor: String
+      limit: Int
+    ): RecordFeed!
     getFoodItems(ids: [ID!]!): [FoodItem]!
     filterFoodItems(
       filter: String!
@@ -60,6 +64,11 @@ const typeDefs = gql`
     weight: Int!
     eatenAt: DateTime!
     createdAt: DateTime!
+  }
+
+  type RecordFeed {
+    cursor: String!
+    records: [Record]!
   }
 `;
 
