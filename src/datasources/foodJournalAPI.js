@@ -46,6 +46,10 @@ class FoodJournalAPI extends DataSource {
           path: "$foodItem",
           preserveNullAndEmptyArrays: false
         }
+      }, {
+        $sort: {
+          "eatenAt": -1
+        }
       }])
       .toArray()
       .then((recs) => {
