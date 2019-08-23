@@ -172,7 +172,7 @@ class FoodJournalAPI extends DataSource {
       .findOneAndUpdate(
         { _id: ObjectID(id)},
         { $set: { weight }},
-        { returnNewDocument: true }
+        { returnOriginal : false }
       )
       .then((rec) => {
         return idsToStrings(rec.value);
