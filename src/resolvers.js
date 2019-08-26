@@ -1,7 +1,10 @@
 const resolvers = {
   Query: {
     getAllRecords: (root, args, { dataSources }) => {
-      return dataSources.foodJournalAPI.getRecords();
+      return dataSources.foodJournalAPI.getRecords().then(({ records }) => records);
+    },
+    recordsFeed: (root, { cursor, limit }, { dataSources }) => {
+      return dataSources.foodJournalAPI.getRecords(cursor, limit);
     },
     getFoodItems: (root, { ids }, { dataSources }) => (
       dataSources.foodJournalAPI.getFoodItemsByIDs(ids)

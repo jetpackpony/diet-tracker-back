@@ -1,6 +1,7 @@
 const { DataSource } = require('apollo-datasource');
 const ObjectID = require('mongodb').ObjectID;
 const escapeRegEx = require("escape-string-regexp");
+const moment = require("moment");
 
 const idsToStrings = (item) => ({
   ...item,
@@ -15,6 +16,64 @@ const buildRegexArray = (filter) => (
       title: new RegExp(str, "i")
     }))
 );
+
+const unpackCursor = (cursor) => {
+  if (!cursor) return { success: false };
+  let [eatenAt, createdAt] = cursor.split("_");
+  eatenAt = moment(eatenAt);
+  createdAt = moment(createdAt);
+  return {
+    success: eatenAt.isValid() && createdAt.isValid,
+    eatenAt,
+    createdAt
+  };
+};
+
+const buildPipelineForRecords = (cursor, limit) => {
+  const pipeline = [];
+  const curs = unpackCursor(cursor);
+  if (curs.success) {
+    pipeline.push(
+      {
+        $match: {
+          $or: [
+            { eatenAt: { $lt: curs.eatenAt.toDate() } },
+            {
+              $and: [
+                { eatenAt: { $eq: curs.eatenAt.toDate() } },
+                { createdAt: { $lt: curs.createdAt.toDate() } },
+              ]
+            }
+          ]
+        }
+      }
+    );
+  }
+  pipeline.push({
+    $sort: {
+      "eatenAt": -1,
+      "createdAt": -1
+    }
+  });
+  pipeline.push({
+    $limit: limit
+  });
+  pipeline.push({
+    $lookup: {
+      from: "foodItems",
+      localField: "foodItemID",
+      foreignField: "_id",
+      as: "foodItem"
+    }
+  });
+  pipeline.push({
+    $unwind: {
+      path: "$foodItem",
+      preserveNullAndEmptyArrays: false
+    }
+  });
+  return pipeline;
+};
 
 class FoodJournalAPI extends DataSource {
   constructor({ db }) {
@@ -32,21 +91,9 @@ class FoodJournalAPI extends DataSource {
     this.context = config.context;
   }
 
-  async getRecords() {
+  async getRecords(cursor = null, limit = 50) {
     const res = await this.db.collection("records")
-      .aggregate([{
-        $lookup: {
-          from: "foodItems",
-          localField: "foodItemID",
-          foreignField: "_id",
-          as: "foodItem"
-        }
-      }, {
-        $unwind: {
-          path: "$foodItem",
-          preserveNullAndEmptyArrays: false
-        }
-      }])
+      .aggregate(buildPipelineForRecords(cursor, limit))
       .toArray()
       .then((recs) => {
         return recs.map(
@@ -57,6 +104,17 @@ class FoodJournalAPI extends DataSource {
             }
           })
         );
+      })
+      .then((recs) => {
+        const last = recs[recs.length - 1];
+        const newCursor =
+          last
+            ? `${last.eatenAt.toISOString()}_${last.createdAt.toISOString()}`
+            : cursor;
+        return {
+          cursor: newCursor,
+          records: recs
+        };
       });
     return res;
   }
@@ -114,7 +172,7 @@ class FoodJournalAPI extends DataSource {
       .findOneAndUpdate(
         { _id: ObjectID(id)},
         { $set: { weight }},
-        { returnNewDocument: true }
+        { returnOriginal : false }
       )
       .then((rec) => {
         return idsToStrings(rec.value);
