@@ -11,6 +11,9 @@ const resolvers = {
     ),
     filterFoodItems: (root, args, { dataSources }) => {
       return dataSources.foodJournalAPI.filterFoodItems(args);
+    },
+    login: (root, args, { dataSources }) => {
+      return dataSources.foodJournalAPI.login(args);
     }
   },
   Mutation: {
