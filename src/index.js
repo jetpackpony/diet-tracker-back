@@ -4,6 +4,7 @@ const { resolvers } = require('./resolvers');
 const { GraphQLDateTime } = require("graphql-iso-date");
 const FoodJournalAPI = require("./datasources/foodJournalAPI");
 const { initDB } = require("./db");
+const { decodeToken } = require("./helpers");
 
 (async () => {
   const { db } = await initDB();
@@ -16,6 +17,11 @@ const { initDB } = require("./db");
     resolvers: {
       DateTime: GraphQLDateTime,
       ...resolvers,
+    },
+    context: ({ req }) => {
+      const token = req.headers.authorization || "";
+      const user = decodeToken(token);
+      return { user };
     }
   });
 

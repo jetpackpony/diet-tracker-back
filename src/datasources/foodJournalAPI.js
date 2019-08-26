@@ -2,8 +2,7 @@ const { DataSource } = require('apollo-datasource');
 const ObjectID = require('mongodb').ObjectID;
 const escapeRegEx = require("escape-string-regexp");
 const moment = require("moment");
-const crypto = require('crypto');
-const jwt = require("jsonwebtoken");
+const { encodePassword, encodeToken } = require("../helpers");
 
 const idsToStrings = (item) => ({
   ...item,
@@ -195,17 +194,15 @@ class FoodJournalAPI extends DataSource {
       throw new Error(`Can't find user "${userName}"`);
     }
 
-    const passHash = crypto
-      .createHmac('sha256', process.env["PASS_SECRET"])
-      .update(password)
-      .digest('hex');
-    if (user.passHash !== passHash) {
+    if (user.passHash !== encodePassword(password)) {
       throw new Error("Incorrect password");
     }
 
     const userObj = idsToStrings({ _id: user._id });
-    const token = jwt.sign(userObj, process.env["JWT_SECRET"]);
-    return { user: userObj, token };
+    return {
+      user: userObj,
+      token: encodeToken(userObj)
+    };
   }
 }
 
