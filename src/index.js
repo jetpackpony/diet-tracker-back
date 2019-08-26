@@ -4,7 +4,7 @@ const { resolvers } = require('./resolvers');
 const { GraphQLDateTime } = require("graphql-iso-date");
 const FoodJournalAPI = require("./datasources/foodJournalAPI");
 const { initDB } = require("./db");
-const { decodeToken } = require("./helpers");
+const { decodeToken } = require("./authHelpers");
 
 (async () => {
   const { db } = await initDB();

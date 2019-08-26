@@ -1,3 +1,5 @@
+const { authResolverDecorator, decorateObject } = require("./authHelpers");
+
 const resolvers = {
   Query: {
     getAllRecords: (root, args, { dataSources }) => {
@@ -35,4 +37,6 @@ const resolvers = {
   }
 };
 
-module.exports = { resolvers };
+module.exports = {
+  resolvers: decorateObject(resolvers, authResolverDecorator)
+};

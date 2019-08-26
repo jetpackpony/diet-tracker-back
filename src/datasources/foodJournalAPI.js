@@ -2,7 +2,7 @@ const { DataSource } = require('apollo-datasource');
 const ObjectID = require('mongodb').ObjectID;
 const escapeRegEx = require("escape-string-regexp");
 const moment = require("moment");
-const { encodePassword, encodeToken } = require("../helpers");
+const { encodePassword, encodeToken } = require("../authHelpers");
 
 const idsToStrings = (item) => ({
   ...item,
