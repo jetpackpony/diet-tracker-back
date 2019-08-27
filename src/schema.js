@@ -13,6 +13,7 @@ const typeDefs = gql`
       limit: Int!
     ): [FoodItem]!
     login(userName: String!, password: String!): LoginResult
+    totals(startInterval: DateTime!, endInterval: DateTime!): Totals!
   }
 
   type Mutation {
@@ -79,6 +80,13 @@ const typeDefs = gql`
   type LoginResult {
     user: User
     token: String
+  }
+
+  type Totals {
+    calories: Float!
+    protein: Float!
+    fat: Float!
+    carbs: Float!
   }
 `;
 

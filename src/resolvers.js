@@ -16,6 +16,9 @@ const resolvers = {
     },
     login: (root, args, { dataSources }) => {
       return dataSources.foodJournalAPI.login(args);
+    },
+    totals: (root, args, { dataSources }) => {
+      return dataSources.foodJournalAPI.totals(args);
     }
   },
   Mutation: {
