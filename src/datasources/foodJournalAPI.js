@@ -2,6 +2,7 @@ const { DataSource } = require('apollo-datasource');
 const ObjectID = require('mongodb').ObjectID;
 const escapeRegEx = require("escape-string-regexp");
 const moment = require("moment");
+const { encodePassword, encodeToken } = require("../authHelpers");
 
 const idsToStrings = (item) => ({
   ...item,
@@ -185,6 +186,23 @@ class FoodJournalAPI extends DataSource {
         { _id: ObjectID(id)},
       )
       .then(() => id);
+  }
+
+  async login({ userName, password }) {
+    const user = await this.db.collection("users").findOne({ userName });
+    if (!user) {
+      throw new Error(`Can't find user "${userName}"`);
+    }
+
+    if (user.passHash !== encodePassword(password)) {
+      throw new Error("Incorrect password");
+    }
+
+    const userObj = idsToStrings({ _id: user._id });
+    return {
+      user: userObj,
+      token: encodeToken(userObj)
+    };
   }
 }
 

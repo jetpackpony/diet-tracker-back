@@ -12,6 +12,7 @@ const typeDefs = gql`
       filter: String!
       limit: Int!
     ): [FoodItem]!
+    login(userName: String!, password: String!): LoginResult
   }
 
   type Mutation {
@@ -69,6 +70,15 @@ const typeDefs = gql`
   type RecordFeed {
     cursor: String!
     records: [Record]!
+  }
+
+  type User {
+    id: ID!
+  }
+
+  type LoginResult {
+    user: User
+    token: String
   }
 `;
 
