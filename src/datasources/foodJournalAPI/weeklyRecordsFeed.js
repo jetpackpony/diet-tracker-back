@@ -158,12 +158,12 @@ const cleanUpWeekRecord = (week) => {
   };
 };
 
-const addCursorsToResults = (weeks) => {
+const addCursorsToResults = (oldCursor, weeks) => {
   const last = weeks[weeks.length - 1];
   const newCursor =
     last
       ? last.weekStart.toISOString()
-      : cursor;
+      : oldCursor;
   return {
     cursor: newCursor,
     weeks
@@ -175,5 +175,5 @@ module.exports = async function getWeeklyRecordsFeed(db, { cursor = null, limit 
     .aggregate(buildPipelineForWeeklyFeed(cursor, limit))
     .toArray()
     .then((weeks) => weeks.map(cleanUpWeekRecord))
-    .then(addCursorsToResults);
+    .then((weeks) => addCursorsToResults(cursor, weeks));
 };

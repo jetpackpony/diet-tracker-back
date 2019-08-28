@@ -4,12 +4,12 @@ const typeDefs = gql`
   type Query {
     getAllRecords: [Record]!
     recordsFeed(
-      cursor: String
-      limit: Int
+      cursor: String!
+      limit: Int!
     ): RecordFeed!
     weeklyRecordsFeed(
-      cursor: String
-      limit: Int
+      cursor: String!
+      limit: Int!
     ): WeeklyRecordsFeed!
     getFoodItems(ids: [ID!]!): [FoodItem]!
     filterFoodItems(
