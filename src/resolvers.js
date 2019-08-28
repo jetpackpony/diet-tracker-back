@@ -3,10 +3,10 @@ const { authResolverDecorator, decorateObject } = require("./authHelpers");
 const resolvers = {
   Query: {
     getAllRecords: (root, args, { dataSources }) => {
-      return dataSources.foodJournalAPI.getRecords().then(({ records }) => records);
+      return dataSources.foodJournalAPI.getRecords(args).then(({ records }) => records);
     },
-    recordsFeed: (root, { cursor, limit }, { dataSources }) => {
-      return dataSources.foodJournalAPI.getRecords(cursor, limit);
+    recordsFeed: (root, args, { dataSources }) => {
+      return dataSources.foodJournalAPI.getRecords(args);
     },
     getFoodItems: (root, { ids }, { dataSources }) => (
       dataSources.foodJournalAPI.getFoodItemsByIDs(ids)
@@ -19,6 +19,9 @@ const resolvers = {
     },
     totals: (root, args, { dataSources }) => {
       return dataSources.foodJournalAPI.totals(args);
+    },
+    weeklyRecordsFeed: (_, args, { dataSources }) => {
+      return dataSources.foodJournalAPI.weeklyRecordsFeed(args);
     }
   },
   Mutation: {
