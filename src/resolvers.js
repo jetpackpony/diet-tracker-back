@@ -19,6 +19,9 @@ const resolvers = {
     },
     totals: (root, args, { dataSources }) => {
       return dataSources.foodJournalAPI.totals(args);
+    },
+    weeklyRecordsFeed: (_, { cursor, limit }, { dataSources }) => {
+      return dataSources.foodJournalAPI.weeklyRecordsFeed(cursor, limit);
     }
   },
   Mutation: {
