@@ -24,10 +24,14 @@ const buildPipelineForWeeklyFeed = (cursor, limit) => {
   } else {
     // If the cursor is not set, get the records starting from current week and
     // into the future
+    let date = moment();
+    if (date.day() <= 2) {
+      date = date.subtract(1, 'week');
+    }
     pipeline.push(
       {
         $match: {
-          eatenAt: { $gt: moment().startOf("isoWeek").toDate() }
+          eatenAt: { $gt: date.startOf("week").toDate() }
         }
       }
     );
@@ -171,9 +175,12 @@ const addCursorsToResults = (oldCursor, weeks) => {
 };
 
 module.exports = async function getWeeklyRecordsFeed(db, { cursor = null, limit = 1 }) {
+  const pipeline = buildPipelineForWeeklyFeed(cursor, limit);
   return db.collection("records")
-    .aggregate(buildPipelineForWeeklyFeed(cursor, limit))
+    .aggregate(pipeline)
     .toArray()
-    .then((weeks) => weeks.map(cleanUpWeekRecord))
+    .then((weeks) => {
+      return weeks.map(cleanUpWeekRecord);
+    })
     .then((weeks) => addCursorsToResults(cursor, weeks));
 };
