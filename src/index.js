@@ -6,6 +6,8 @@ const FoodJournalAPI = require("./datasources/foodJournalAPI");
 const { initDB } = require("./db");
 const { decodeToken } = require("./authHelpers");
 
+console.log("NODE_ENV: ", process.env.NODE_ENV);
+
 (async () => {
   const { db } = await initDB();
 

@@ -47,7 +47,7 @@ To install an npm package:
   ```
   1. Build the image:
   ```bash
-  $  docker build -t diet-tracker-back .
+  $  docker build --build-arg NODE_ENV=production -t diet-tracker-back .
   ```
   2. Tag the image with repository name:
   ```bash
