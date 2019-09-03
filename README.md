@@ -58,19 +58,25 @@ To install an npm package:
   $ docker push jetpackpony/diet-tracker-back
   ```
   4. Copy `template.env` file to `.env.prod` and setup all the variables
-  5. Move `.env.prod` and `docker-compose.prod.yml` files to your production machine. For gcloud VM:
+  5. Move `.env.prod`, `docker-compose.prod.yml` files and `mongo` directory
+  to your production machine. For gcloud VM:
   ```bash
-  $ gcloud.cmd compute scp ./.env.prod ./docker-compose.prod.yml \
-                           INSTANCE_USER_NAME@INSTANCE_NAME:/home/jetpackpony/diet-tracker-back
+  $ gcloud.cmd compute scp ./.env.prod ./docker-compose.prod.yml ./mongo \
+                           INSTANCE_USER_NAME@INSTANCE_NAME:/home/jetpackpony/diet-tracker-back \
+                           --recurse
   ```
-  7. Rename `.evn.prod` to `.env` on the remote server. This needs to be done
+  5. To ssh into the instance use:
+  ```
+  $ gcloud.cmd compute ssh INSTANCE_NAME
+  ```
+  6. Rename `.evn.prod` to `.env` on the remote server. This needs to be done
   so that docker-compose picks it up.
   ```bash
   $ mv .env.prod .env
   ```
-  6. On production machine, to start the container with the app, run:
+  7. On production machine, to start the container with the app, run:
   ```bash
-  $ docker-compose pull
+  $ docker-compose pull jetpackpony/diet-tracker-back
   $ docker-compose -f docker-compose.prod.yml up -d
   ```
   This setup works with [traefik](https://docs.traefik.io/user-guide/docker-and-lets-encrypt/)
