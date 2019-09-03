@@ -18,6 +18,26 @@ services:
     env_file:
       - .env
     command: npm run start:prod
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo
+    container_name: diet-tracker-mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ADMIN_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ADMIN_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME}
+      MONGO_USERNAME: ${MONGO_APP_USERNAME}
+      MONGO_PASSWORD: ${MONGO_APP_PASSWORD}
+    volumes:
+      - diet-tracker-data-volume:/data/db
+      - ./mongo/init-scripts/dev:/docker-entrypoint-initdb.d
+    expose:
+      - 27017
+
+volumes:
+  diet-tracker-data-volume:
 
 networks:
   web:
