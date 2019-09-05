@@ -29,3 +29,6 @@ couchdb
 
 # vscode
 .vscode
+
+# gcloud certificates
+gcloud/certs/*

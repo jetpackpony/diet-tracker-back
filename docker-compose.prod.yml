@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 services:
   app:
     image: jetpackpony/diet-tracker-back
@@ -36,9 +36,26 @@ services:
     expose:
       - 27017
 
+  gcloud-backup:
+    image: jetpackpony/diet-tracker-backup
+    container_name: diet-tracker-backup
+    environment:
+      - SVC_ACCOUNT_FILE=/run/secrets/svc_account.json
+    secrets:
+      - svc_account.json
+    command: sh -c "./setup-gcloud.sh && ./setup-cron.sh"
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+
 volumes:
   diet-tracker-data-volume:
 
 networks:
   web:
     external: true
+
+secrets:
+  svc_account.json:
+    file: ./svc_account.json

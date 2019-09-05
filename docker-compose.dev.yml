@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 services:
   app:
     build: .
@@ -30,5 +30,24 @@ services:
     ports:
       - 27017:27017
 
+  gcloud-backup:
+    build: 
+      context: .
+      dockerfile: backup.Dockerfile
+    container_name: diet-tracker-backup
+    environment:
+      - SVC_ACCOUNT_FILE=/run/secrets/svc_account.json
+    secrets:
+      - svc_account.json
+    command: sh -c "./setup-gcloud.sh && ./backup.sh"
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+
 volumes:
   data-volume:
+
+secrets:
+  svc_account.json:
+    file: ./gcloud/certs/svc_account.json

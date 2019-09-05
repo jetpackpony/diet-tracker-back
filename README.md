@@ -9,7 +9,7 @@ A backend for diet-tracker configurated for development and production setups.
   variables only needed in production).
   3. Run the container:
   ```bash
-  $ docker-compose -f docker-compose.dev.yml up --build
+  $ docker-compose -f docker-compose.dev.yml up --build app
   ```
 This will run 3 containers:
 
@@ -17,9 +17,7 @@ This will run 3 containers:
   to the changes in the local directory and reloads the server. The app runs on
   port 4000. Also, `nodemon` is run with `--inspect` flag so the debugger is
   available on port `9229`
-  2. `mongo-express` instance which runs on port 8081 and allows you to browse the
-  database
-  3. A mondodb instance, which is exposed on port 27017
+  2. A mondodb instance, which is exposed on port 27017
 
 `docker-compose` creates a persistent volume called `data-volume`, where the
 database is stored. This is the one that should be backed up. When the volume doesn't
@@ -29,6 +27,12 @@ and `MONGO_ADMIN_PASSWORD` env virables. It will also create a user with
 credentials from `MONGO_USERNAME` and `MONGO_PASSWORD` and make it an admin
 of the database named `MONGO_INITDB_DATABASE`.
 
+To run a one-off backup of the dev db (with upload to gcloud):
+
+```bash
+  $ docker-compose -f docker-compose.dev.yml up --build gcloud-backup
+```
+
 To install an npm package:
   1. nstall it on the host machine:
   ```bash
@@ -36,47 +40,49 @@ To install an npm package:
   ```
   2. Build the image again, renewing the node_modules directory:
   ```bash
-  $ docker-compose -f docker-compose.dev.yml up --build -V
+  $ docker-compose -f docker-compose.dev.yml up --build -V app
   ```
 
 ## Deploying to production
 
-  0. Login into docker hub:
+  * Login into docker hub:
   ```bash
   $ docker login
   ```
-  1. Build the image:
+  
+  * Build the app image and push to repo:
   ```bash
-  $  docker build --build-arg NODE_ENV=production -t diet-tracker-back .
+  $  docker build --build-arg NODE_ENV=production -t diet-tracker-back . \
+        && docker tag diet-tracker-back jetpackpony/diet-tracker-back \
+        && docker push jetpackpony/diet-tracker-back
   ```
-  2. Tag the image with repository name:
+  * Build the auto-backup image and push to repo:
   ```bash
-  $ docker tag diet-tracker-back REPO-NAME/diet-tracker-back
+  $ docker build -t diet-tracker-backup -f backup.Dockerfile . \
+        && docker tag diet-tracker-backup jetpackpony/diet-tracker-backup \
+        && docker push jetpackpony/diet-tracker-backup
   ```
-  3. Push the image to the repo:
-  ```bash
-  $ docker push jetpackpony/diet-tracker-back
-  ```
-  4. Copy `template.env` file to `.env.prod` and setup all the variables
-  5. Move `.env.prod`, `docker-compose.prod.yml` files and `mongo` directory
+  * Setup a gcloud service account for backup and save it to `svc_account.json`
+  * Copy `template.env` file to `.env.prod` and setup all the variables
+  * Move `.env.prod`, `docker-compose.prod.yml`, `mongo`, `svc_account.json`
   to your production machine. For gcloud VM:
   ```bash
-  $ gcloud.cmd compute scp ./.env.prod ./docker-compose.prod.yml ./mongo \
-                           INSTANCE_USER_NAME@INSTANCE_NAME:/home/jetpackpony/diet-tracker-back \
+  $ gcloud.cmd compute scp ./.env.prod ./docker-compose.prod.yml ./mongo ./gcloud/certs/svc_account.json \
+                           jetpackpony@vpc:/home/jetpackpony/diet-tracker-back \
                            --recurse
   ```
-  5. To ssh into the instance use:
+  * To ssh into the instance use:
   ```
-  $ gcloud.cmd compute ssh INSTANCE_NAME
+  $ gcloud.cmd compute ssh jetpackpony@vpc
   ```
-  6. Rename `.evn.prod` to `.env` on the remote server. This needs to be done
+  * Rename `.evn.prod` to `.env` on the remote server. This needs to be done
   so that docker-compose picks it up.
   ```bash
   $ mv .env.prod .env
   ```
-  7. On production machine, to start the container with the app, run:
+  * On production machine, to start the container with the app, run:
   ```bash
-  $ docker-compose pull jetpackpony/diet-tracker-back
+  $ docker-compose -f docker-compose.prod.yml pull
   $ docker-compose -f docker-compose.prod.yml up -d
   ```
   This setup works with [traefik](https://docs.traefik.io/user-guide/docker-and-lets-encrypt/)
@@ -93,4 +99,15 @@ services:
       - 3000
     ports:
       - 3000:3000
+  ```
+## Running a one-time backup
+
+  The network should be the same network in which mongod instance is running
+  ```bash
+  $ docker create -ti --name=backup
+          --network=diet-tracker-back_default \
+          --env-file=.env -e SVC_ACCOUNT_FILE=//tmp/svc_account.json \
+          backup sh -c "./setup-gcloud.sh && ./backup.sh"
+  $ docker cp gcloud/certs/svc_account.json backup:/tmp/svc_account.json
+  $ winpty docker start -ai backup
   ```
