@@ -104,10 +104,30 @@ services:
 
   The network should be the same network in which mongod instance is running
   ```bash
-  $ docker create -ti --name=backup
+  $ CONTAINER_NAME=diet-tracker-backup \
+      && docker create -ti --name=$CONTAINER_NAME \
           --network=diet-tracker-back_default \
           --env-file=.env -e SVC_ACCOUNT_FILE=//tmp/svc_account.json \
-          backup sh -c "./setup-gcloud.sh && ./backup.sh"
-  $ docker cp gcloud/certs/svc_account.json backup:/tmp/svc_account.json
-  $ winpty docker start -ai backup
+          diet-tracker-backup sh -c "./setup-gcloud.sh && ./backup.sh" \
+      && docker cp gcloud/certs/svc_account.json \
+              $CONTAINER_NAME:/tmp/svc_account.json \
+      && winpty docker start -ai $CONTAINER_NAME \
+      && docker rm $CONTAINER_NAME
+  ```
+
+## Restoring a backup
+
+  The backup image has a `restore.sh` script which restores a provided dump file
+  into the db. The network should be the same network in which mongod instance is running
+  ```bash
+  $ CONTAINER_NAME=diet-tracker-restore \
+      && docker create -ti --name=$CONTAINER_NAME \
+          --network=diet-tracker-back_default \
+          --env-file=.env \
+          -e DUMP_TO_RESTORE=//tmp/dump_to_restore.gz.archive \
+          diet-tracker-backup sh -c "./restore.sh" \
+      && docker cp ./dietTracker2019-09-06-00-59-00.gz.archive \
+              $CONTAINER_NAME:/tmp/dump_to_restore.gz.archive \
+      && winpty docker start -ai $CONTAINER_NAME \
+      && docker rm $CONTAINER_NAME
   ```
