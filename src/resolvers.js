@@ -22,6 +22,9 @@ const resolvers = {
     },
     weeklyRecordsFeed: (_, args, { dataSources }) => {
       return dataSources.foodJournalAPI.weeklyRecordsFeed(args);
+    },
+    getRecord: (root, args, { dataSources }) => {
+      return dataSources.foodJournalAPI.getRecordById(args);
     }
   },
   Mutation: {

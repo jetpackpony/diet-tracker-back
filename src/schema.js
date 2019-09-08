@@ -18,6 +18,7 @@ const typeDefs = gql`
     ): [FoodItem]!
     login(userName: String!, password: String!): LoginResult
     totals(startInterval: DateTime!, endInterval: DateTime!): Totals!
+    getRecord(id: ID!): Record
   }
 
   type Mutation {

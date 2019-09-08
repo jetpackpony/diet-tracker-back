@@ -38,10 +38,52 @@ class FoodJournalAPI extends DataSource {
       .then((res) => ({ id: res.insertedIds[0].toString() }));
   }
 
+  async getRecordById({ id }) {
+    const res = await this.db.collection("records")
+      .aggregate([
+        {
+          $match: {
+            _id: ObjectID(id)
+          }
+        },
+        {
+          $lookup: {
+            from: "foodItems",
+            localField: "foodItemID",
+            foreignField: "_id",
+            as: "foodItem"
+          }
+        },
+        {
+          $unwind: {
+            path: "$foodItem",
+            preserveNullAndEmptyArrays: false
+          }
+        }
+
+      ])
+      .toArray()
+      .then((recs) => {
+        return recs.map(
+          (rec) => ({
+            ...idsToStrings(rec),
+            foodItem: {
+              ...idsToStrings(rec.foodItem)
+            }
+          })
+        );
+      })
+      .then((recs) => recs[0] || null)
+    return res;
+  }
+
   async createRecord({ foodItemID, weight, eatenAt, createdAt }) {
     return this.db.collection("records")
-      .insert({ foodItemID: ObjectID(foodItemID), weight, eatenAt, createdAt })
-      .then((res) => ({ id: res.insertedIds[0].toString() }));
+      .insertOne({ foodItemID: ObjectID(foodItemID), weight, eatenAt, createdAt })
+      .then((res) => (res.insertedId))
+      .then((recId) => {
+        return this.getRecordById(recId)
+      });
   }
 
   async createRecordWithFoodItem({
