@@ -16,7 +16,8 @@ This will run 3 containers:
   1. An app itself. App is run with `nodemon` and listens
   to the changes in the local directory and reloads the server. The app runs on
   port 4000. Also, `nodemon` is run with `--inspect` flag so the debugger is
-  available on port `9229`
+  available on port `9229`. Debugger breaks on the app start, so you need to
+  connect to debugger and press 'continue'.
   2. A mondodb instance, which is exposed on port 27017
 
 `docker-compose` creates a persistent volume called `data-volume`, where the
