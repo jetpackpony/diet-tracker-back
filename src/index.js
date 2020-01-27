@@ -5,6 +5,12 @@ const { GraphQLDateTime } = require("graphql-iso-date");
 const FoodJournalAPI = require("./datasources/foodJournalAPI");
 const { initDB } = require("./db");
 const { decodeToken } = require("./authHelpers");
+const moment = require("moment");
+moment.locale('en-week-starts-monday', {
+  week: {
+    dow: 1
+  }
+});
 
 console.log("NODE_ENV: ", process.env.NODE_ENV);
 
