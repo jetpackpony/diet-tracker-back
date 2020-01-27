@@ -137,15 +137,53 @@ const buildPipelineForWeeklyFeed = (cursor, limit) => {
   return pipeline;
 };
 
-const cleanUpDayRecord = (day) => {
+const convertDayDates = (day) => {
   const dayStart = moment(day._id);
   const dayEnd = dayStart.clone().add(24, "hours");
   return {
-    dayStart: dayStart.toDate(),
-    dayEnd: dayEnd.toDate(),
+    dayStart,
+    dayEnd,
     totals: day.totals,
     records: day.records
   };
+};
+
+const cleanUpDayRecord = (day) => {
+  return {
+    dayStart: day.dayStart.toDate(),
+    dayEnd: day.dayEnd.toDate(),
+    totals: day.totals,
+    records: day.records
+  };
+};
+const makeBlankDay = (dayStart) => ({
+  dayStart: dayStart.clone(),
+  dayEnd: dayStart.clone().add(1, "day"),
+  totals: {
+    calories: 0,
+    protein: 0,
+    fat: 0,
+    carbs: 0,
+  },
+  records: []
+});
+
+const padEmptyDays = (weekStart, weekEnd, days) => {
+  const stepDate = weekStart.clone();
+  const newDays = [];
+
+  while(
+    (stepDate.isBefore(weekEnd))
+    && stepDate.isBefore(moment())
+  ) {
+    newDays.push(
+      days.find((item) => item.dayStart.isSame(stepDate)) || makeBlankDay(stepDate)
+    );
+    stepDate.add(1, "day");
+  }
+  newDays.reverse();
+
+  return newDays;
 };
 
 const cleanUpWeekRecord = (week) => {
@@ -154,11 +192,12 @@ const cleanUpWeekRecord = (week) => {
     .isoWeek(week._id.isoWeek)
     .startOf("isoweek");
   const weekEnd = weekStart.clone().add(1, "week");
+  const days = week.days.map(convertDayDates);
   return {
     weekStart: weekStart.toDate(),
     weekEnd: weekEnd.toDate(),
     totals: week.totals,
-    days: week.days.map(cleanUpDayRecord)
+    days: padEmptyDays(weekStart, weekEnd, days).map(cleanUpDayRecord)
   };
 };
 
