@@ -1,37 +1,26 @@
 const moment = require("moment");
 
-const unpackWeeklyCursor = (cursor) => {
-  if (!cursor) return false;
-  const value = moment(cursor);
-  return value.isValid() ? value : false;
-};
-
-const buildPipelineForWeeklyFeed = (cursor, limit) => {
+const buildPipelineForWeeklyFeed = (cursorRange) => {
   const pipeline = [];
-  let curs = unpackWeeklyCursor(cursor);
-  if (curs) {
-    // If the cursor is set, get only the records for specified weeks
+  if (cursorRange.to) {
+    // If the end date is set, specify the range
     pipeline.push(
       {
         $match: {
           $and: [
-            { eatenAt: { $lte: curs.toDate() } },
-            { eatenAt: { $gt: curs.clone().subtract(limit, "weeks").toDate() } },
+            { eatenAt: { $lte: cursorRange.to.toDate() } },
+            { eatenAt: { $gt: cursorRange.from.toDate() } },
           ]
         }
       }
     );
   } else {
-    // If the cursor is not set, get the records starting from current week and
+    // If the end date is not set, get the records starting from current week and
     // into the future
-    let date = moment();
-    if (date.day() <= 2) {
-      date = date.subtract(1, 'week');
-    }
     pipeline.push(
       {
         $match: {
-          eatenAt: { $gt: date.startOf("week").toDate() }
+          eatenAt: { $gt: cursorRange.from.toDate() }
         }
       }
     );
@@ -186,18 +175,27 @@ const padEmptyDays = (weekStart, weekEnd, days) => {
   return newDays;
 };
 
-const cleanUpWeekRecord = (week) => {
+const convertWeekDates = (week) => {
   const weekStart = moment()
     .isoWeekYear(week._id.isoWeekYear)
     .isoWeek(week._id.isoWeek)
     .startOf("isoweek");
   const weekEnd = weekStart.clone().add(1, "week");
+  return {
+    weekStart: weekStart,
+    weekEnd: weekEnd,
+    totals: week.totals,
+    days: week.days
+  };
+};
+
+const cleanUpWeekRecord = (week) => {
   const days = week.days.map(convertDayDates);
   return {
-    weekStart: weekStart.toDate(),
-    weekEnd: weekEnd.toDate(),
+    weekStart: week.weekStart.toDate(),
+    weekEnd: week.weekEnd.toDate(),
     totals: week.totals,
-    days: padEmptyDays(weekStart, weekEnd, days).map(cleanUpDayRecord)
+    days: padEmptyDays(week.weekStart, week.weekEnd, days).map(cleanUpDayRecord)
   };
 };
 
@@ -213,13 +211,71 @@ const addCursorsToResults = (oldCursor, weeks) => {
   };
 };
 
+const unpackWeeklyCursor = (cursor) => {
+  if (!cursor) return false;
+  const value = moment(cursor);
+  return value.isValid() ? value : false;
+};
+
+const getCursorRange = (cursor, limit) => {
+  let curs = unpackWeeklyCursor(cursor);
+  if (curs) {
+    // If the cursor is set, get only the records for specified weeks
+    return {
+      from: curs.clone().subtract(limit, "weeks"),
+      to: curs
+    };
+  } else {
+    // If the cursor is not set, get the records starting from current week and
+    // into the future
+    let date = moment();
+    if (date.day() <= 2) {
+      date = date.subtract(1, 'week');
+    }
+    return {
+      from: date.startOf("week")
+    };
+  }
+};
+
+const makeBlankWeek = (weekStart) => ({
+  weekStart: weekStart.clone(),
+  weekEnd: weekStart.clone().add(1, "week"),
+  totals: {
+    calories: 0,
+    protein: 0,
+    fat: 0,
+    carbs: 0,
+  },
+  days: []
+});
+
+const padEmptyWeeks = (range, weeks) => {
+  // Either the end of range, or current time
+  const rangeEnd = moment(range.to || undefined);
+  const stepDate = range.from.clone();
+  const newWeeks = [];
+
+  while(stepDate.isBefore(rangeEnd)) {
+    newWeeks.push(
+      weeks.find((item) => item.weekStart.isSame(stepDate)) || makeBlankWeek(stepDate)
+    );
+    stepDate.add(1, "week");
+  }
+  newWeeks.reverse();
+
+  return newWeeks;
+};
+
 module.exports = async function getWeeklyRecordsFeed(db, { cursor = null, limit = 1 }) {
-  const pipeline = buildPipelineForWeeklyFeed(cursor, limit);
+  const cursorRange = getCursorRange(cursor, limit)
+  const pipeline = buildPipelineForWeeklyFeed(cursorRange);
   return db.collection("records")
     .aggregate(pipeline)
     .toArray()
     .then((weeks) => {
-      return weeks.map(cleanUpWeekRecord);
+      
+      return padEmptyWeeks(cursorRange, weeks.map(convertWeekDates)).map(cleanUpWeekRecord);
     })
     .then((weeks) => addCursorsToResults(cursor, weeks));
 };
