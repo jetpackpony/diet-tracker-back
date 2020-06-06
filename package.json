@@ -12,7 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "apollo-datasource": "^0.6.4",
-    "apollo-server": "^2.9.16",
+    "apollo-server": "^2.14.2",
     "escape-string-regexp": "^2.0.0",
     "express": "^4.17.1",
     "graphql": "^14.6.0",
