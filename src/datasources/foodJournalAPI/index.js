@@ -34,8 +34,8 @@ class FoodJournalAPI extends DataSource {
 
   async createFoodItem({ title, calories, protein, fat, carbs }) {
     return this.db.collection("foodItems")
-      .insert({ title, calories, protein, fat, carbs })
-      .then((res) => ({ id: res.insertedIds[0].toString() }));
+      .insertOne({ title, calories, protein, fat, carbs })
+      .then((res) => ({ id: res.insertedId.toString() }));
   }
 
   async getRecordById({ id }) {

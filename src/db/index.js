@@ -46,7 +46,7 @@ const createOrUpdateDefaultUser = async (db) => {
 };
 
 const initDB = async () => {
-  const client = new MongoClient(url, { useNewUrlParser: true });
+  const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
   try {
     await client.connect();
     const db = client.db(MONGO_DB_NAME);
