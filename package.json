@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "docker-compose -f docker-compose.dev.yml up --build app",
     "start:dev": "nodemon --inspect-brk=0.0.0.0 -L ./src/index.js",
     "start:prod": "node ./src/index.js"
   },
