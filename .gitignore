@@ -32,3 +32,6 @@ couchdb
 
 # gcloud certificates
 gcloud/certs/*
+
+# secrets
+.secrets

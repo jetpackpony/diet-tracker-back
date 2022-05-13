@@ -1,6 +1,7 @@
 FROM node:10-alpine
 
 RUN npm install -g nodemon
+RUN apk add --no-cache mongodb-tools
 
 ARG NODE_ENV=development
 ENV NODE_ENV=${NODE_ENV}
@@ -11,3 +12,4 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
+RUN chmod -R u+x ./backups/*.sh

@@ -12,6 +12,10 @@ services:
       - 4000:4000
       - 9229:9229
     command: npm run start:dev
+    environment:
+      - SVC_ACCOUNT_FILE=/run/secrets/svc_account.json
+    secrets:
+      - svc_account.json
     env_file:
       - .env
 
@@ -30,24 +34,9 @@ services:
     ports:
       - 27017:27017
 
-  gcloud-backup:
-    build: 
-      context: .
-      dockerfile: backup.Dockerfile
-    container_name: diet-tracker-backup
-    environment:
-      - SVC_ACCOUNT_FILE=/run/secrets/svc_account.json
-    secrets:
-      - svc_account.json
-    command: sh -c "./setup-gcloud.sh && ./backup.sh"
-    env_file:
-      - .env
-    depends_on:
-      - mongo
-
 volumes:
   data-volume:
 
 secrets:
   svc_account.json:
-    file: ./gcloud/certs/svc_account.json
+    file: ./.secrets/svc_account.json
