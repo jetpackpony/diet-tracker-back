@@ -14,7 +14,7 @@
   "dependencies": {
     "@googleapis/drive": "^2.3.0",
     "apollo-datasource": "^0.7.1",
-    "apollo-server": "^2.15.0",
+    "apollo-server": "^2.25.3",
     "escape-string-regexp": "^4.0.0",
     "express": "^4.17.1",
     "graphql": "^14.6.0",
