@@ -6,8 +6,9 @@
   "main": "index.js",
   "scripts": {
     "start": "docker-compose -f docker-compose.dev.yml up --build app",
-    "start:dev": "nodemon --inspect-brk=0.0.0.0 -L ./src/index.js",
-    "start:prod": "node ./src/index.js"
+    "start:dev": "nodemon --inspect=0.0.0.0:9229 src/index.ts",
+    "start:prod": "node ./build/index.js",
+    "build": "tsc -p ."
   },
   "keywords": [],
   "author": "",
@@ -24,5 +25,14 @@
     "moment": "^2.29.3",
     "mongodb": "^4.7.0",
     "ramda": "^0.28.0"
+  },
+  "devDependencies": {
+    "@tsconfig/node16-strictest-esm": "^1.0.3",
+    "@types/jsonwebtoken": "^8.5.8",
+    "@types/node": "^18.0.0",
+    "@types/ramda": "^0.28.14",
+    "nodemon": "^2.0.18",
+    "ts-node": "^10.8.1",
+    "typescript": "^4.7.4"
   }
 }

@@ -1,31 +1,30 @@
 import crypto from 'crypto';
 import jwt from "jsonwebtoken";
 
-export const encodeToken = (payload) => {
-  return jwt.sign(payload, process.env["JWT_SECRET"]);
+const JWT_SECRET = process.env["JWT_SECRET"] || "";
+export const encodeToken = (payload: string | object | Buffer) => {
+  return jwt.sign(payload, JWT_SECRET);
 };
 
-export const decodeToken = (token) => {
+export const decodeToken = (token: string) => {
   try {
-    const payload = jwt.verify(
-      token.replace("Bearer ", ""),
-      process.env["JWT_SECRET"]
-    );
+    const payload = jwt.verify(token.replace("Bearer ", ""), JWT_SECRET);
     return payload;
   } catch(e) {
     return null;
   }
 };
 
-export const encodePassword = (password) => {
+const PASS_SECRET = process.env["PASS_SECRET"] || "";
+export const encodePassword = (password: string) : string => {
   return crypto
-    .createHmac('sha256', process.env["PASS_SECRET"])
+    .createHmac('sha256', PASS_SECRET)
     .update(password)
     .digest('hex');
 }
 
 export function decorateObject(obj, cb) {
-  if (typeof obj === "object") {
+  if (typeof obj === "object" && obj !== null) {
     return Object.keys(obj).reduce((res, key) => {
       if (obj.hasOwnProperty(key)) {
         res[key] = decorateObject(obj[key], cb);

@@ -1,6 +1,5 @@
-import { MongoClient } from 'mongodb';
+import { Db, MongoClient, MongoError } from 'mongodb';
 import { encodePassword } from "../authHelpers.js";
-
 const {
   MONGO_APP_USERNAME, MONGO_APP_PASSWORD,
   MONGO_HOST, MONGO_PORT, MONGO_DB_NAME,
@@ -10,7 +9,13 @@ const {
 const url = `mongodb://${MONGO_APP_USERNAME}:${MONGO_APP_PASSWORD}` 
             + `@${MONGO_HOST}:${MONGO_PORT}/${MONGO_DB_NAME}`;
 
-const createOrUpdateDefaultUser = async (db) => {
+const createOrUpdateDefaultUser = async (db: Db) => {
+  if (APP_USER_NAME == undefined) {
+    throw new Error("App user name is not set. Won't connect to the DB like this!");
+  }
+  if (APP_USER_PASSWORD == undefined) {
+    throw new Error("App user password is not set. Won't connect to the DB like this!");
+  }
   const user = await db.collection("users").findOne({
     userName: APP_USER_NAME
   });
@@ -52,13 +57,15 @@ export const initDB = async () => {
     await client.connect();
     const db = client.db(MONGO_DB_NAME);
     await createOrUpdateDefaultUser(db);
-    return {
-      db,
-      client
-    };
+    return db;
   } catch (err) {
-    console.log("Couldn't connect to DB");
-    console.log(err.stack);
-    exit(1);
+    console.error("Couldn't connect to DB");
+    if (err instanceof MongoError) {
+      console.error("MongoDB error: ", err.message);
+    } else if (err instanceof Error) {
+      console.error(err.message);
+    } else {
+      console.error(err);
+    }
   }
 };

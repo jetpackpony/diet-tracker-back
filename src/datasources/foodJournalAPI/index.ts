@@ -1,5 +1,5 @@
 import { DataSource } from 'apollo-datasource';
-import { ObjectId } from 'mongodb';
+import { ObjectId, Db } from 'mongodb';
 import { idsToStrings } from "./helpers.js";
 import getWeeklyRecordsFeed from "./weeklyRecordsFeed/index.js";
 import totals from "./totals.js";
@@ -8,7 +8,8 @@ import login from "./login.js";
 import filterFoodItems from "./filterFoodItems.js";
 
 export default class FoodJournalAPI extends DataSource {
-  constructor({ db }) {
+  db : Db;
+  constructor({ db } : { db: Db }) {
     super();
     this.db = db;
   }

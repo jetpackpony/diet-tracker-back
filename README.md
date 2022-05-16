@@ -37,7 +37,7 @@ To install an npm package:
 * Build the app image and push to repo:
   > ### This repo is public so be careful to not leave any secrests in the image! Use `.dockerignore` to ignore files from local directory
   ```bash
-  $  docker build --build-arg NODE_ENV=production -t diet-tracker-back . \
+  $  docker build --build-arg --target=production -t diet-tracker-back . \
         && docker tag diet-tracker-back jetpackpony/diet-tracker-back \
         && docker push jetpackpony/diet-tracker-back
   ```

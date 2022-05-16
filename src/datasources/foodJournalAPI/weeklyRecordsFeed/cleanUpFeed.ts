@@ -107,12 +107,10 @@ const cleanUpWeekRecord = (week) => {
   };
 };
 
-const cleanUpFeed = (cursorRange, weeks) => {
+export default function cleanUpFeed(cursorRange, weeks) {
   return R.compose(
     R.map(cleanUpWeekRecord),
     padEmptyWeeks(cursorRange),
     R.map(convertDates)
   )(weeks);
 };
-
-export default cleanUpFeed;

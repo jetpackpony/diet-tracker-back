@@ -1,5 +1,5 @@
 
-const buildPipelineForWeeklyFeed = (cursorRange) => {
+export default function buildPipelineForWeeklyFeed(cursorRange) {
   const pipeline = [];
   if (cursorRange.to) {
     // If the end date is set, specify the range
@@ -124,5 +124,3 @@ const buildPipelineForWeeklyFeed = (cursorRange) => {
   });
   return pipeline;
 };
-
-export default buildPipelineForWeeklyFeed;
