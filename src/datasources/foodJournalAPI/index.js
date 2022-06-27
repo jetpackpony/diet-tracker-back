@@ -1,13 +1,15 @@
-const { DataSource } = require('apollo-datasource');
-const ObjectID = require('mongodb').ObjectID;
-const { idsToStrings } = require("./helpers");
-const getWeeklyRecordsFeed = require("./weeklyRecordsFeed");
-const totals = require("./totals");
-const getRecords = require("./getRecords");
-const login = require("./login");
-const filterFoodItems = require("./filterFoodItems");
+import { DataSource } from 'apollo-datasource';
+import mongodb from 'mongodb';
+import { idsToStrings } from "./helpers.js";
+import getWeeklyRecordsFeed from "./weeklyRecordsFeed/index.js";
+import totals from "./totals.js";
+import getRecords from "./getRecords.js";
+import login from "./login.js";
+import filterFoodItems from "./filterFoodItems.js";
 
-class FoodJournalAPI extends DataSource {
+const ObjectID = mongodb.ObjectID;
+
+export default class FoodJournalAPI extends DataSource {
   constructor({ db }) {
     super();
     this.db = db;
@@ -137,5 +139,3 @@ class FoodJournalAPI extends DataSource {
     return getWeeklyRecordsFeed(this.db, args);
   }
 }
-
-module.exports = FoodJournalAPI;

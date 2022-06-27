@@ -1,5 +1,5 @@
-const R = require("ramda");
-const moment = require("moment");
+import * as R from "ramda";
+import moment from "moment";
 
 const makeBlankWeek = (weekStart) => ({
   weekStart: weekStart.clone(),
@@ -115,4 +115,4 @@ const cleanUpFeed = (cursorRange, weeks) => {
   )(weeks);
 };
 
-module.exports = cleanUpFeed;
+export default cleanUpFeed;

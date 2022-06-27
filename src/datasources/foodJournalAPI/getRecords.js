@@ -1,5 +1,5 @@
-const moment = require("moment");
-const { idsToStrings } = require("./helpers");
+import moment from "moment";
+import { idsToStrings } from "./helpers.js";
 
 const unpackCursor = (cursor) => {
   if (!cursor) return { success: false };
@@ -59,7 +59,7 @@ const buildPipeline = (cursor, limit) => {
   return pipeline;
 };
 
-module.exports = async function getRecords(db, { cursor = null, limit = 50 }) {
+export default async function getRecords(db, { cursor = null, limit = 50 }) {
   const res = await db.collection("records")
     .aggregate(buildPipeline(cursor, limit))
     .toArray()

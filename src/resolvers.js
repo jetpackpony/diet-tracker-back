@@ -1,6 +1,6 @@
-const { authResolverDecorator, decorateObject } = require("./authHelpers");
+import { authResolverDecorator, decorateObject } from "./authHelpers.js";
 
-const resolvers = {
+export const resolvers = decorateObject({
   Query: {
     getAllRecords: (root, args, { dataSources }) => {
       return dataSources.foodJournalAPI.getRecords(args).then(({ records }) => records);
@@ -44,8 +44,4 @@ const resolvers = {
       return dataSources.foodJournalAPI.deleteRecord(id);
     },
   }
-};
-
-module.exports = {
-  resolvers: decorateObject(resolvers, authResolverDecorator)
-};
+}, authResolverDecorator);

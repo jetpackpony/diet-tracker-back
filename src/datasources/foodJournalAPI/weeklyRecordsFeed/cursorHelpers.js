@@ -1,6 +1,6 @@
-const moment = require("moment");
+import moment from "moment";
 
-const makeNewCursor = (cursorRange) => {
+export const makeNewCursor = (cursorRange) => {
   return cursorRange.from.toISOString();
 };
 
@@ -10,7 +10,7 @@ const unpackWeeklyCursor = (cursor) => {
   return value.isValid() ? value : false;
 };
 
-const getCursorRange = (cursor, limit) => {
+export const getCursorRange = (cursor, limit) => {
   let curs = unpackWeeklyCursor(cursor);
   if (curs) {
     // If the cursor is set, get only the records for specified weeks
@@ -30,5 +30,3 @@ const getCursorRange = (cursor, limit) => {
     };
   }
 };
-
-module.exports = { getCursorRange, makeNewCursor };
