@@ -16,14 +16,13 @@
     "@googleapis/drive": "^2.3.0",
     "apollo-datasource": "^0.7.1",
     "apollo-server": "^2.15.0",
-    "escape-string-regexp": "^4.0.0",
-    "express": "^4.17.1",
+    "escape-string-regexp": "^5.0.0",
+    "express": "^4.18.1",
     "graphql": "^14.6.0",
     "graphql-iso-date": "^3.6.1",
     "jsonwebtoken": "^8.5.1",
-    "moment": "^2.27.0",
+    "moment": "^2.29.3",
     "mongodb": "^3.5.9",
-    "nano": "^8.2.2",
-    "ramda": "^0.27.0"
+    "ramda": "^0.28.0"
   }
 }
