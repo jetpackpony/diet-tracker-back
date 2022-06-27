@@ -1,7 +1,7 @@
 import { ApolloServer, gql } from 'apollo-server';
 import { typeDefs } from './schema.js';
 import { resolvers } from './resolvers.js';
-import graphqlIsoDate from "graphql-iso-date";
+import { GraphQLDateTime } from 'graphql-scalars';
 import FoodJournalAPI from "./datasources/foodJournalAPI/index.js";
 import { initDB } from "./db/index.js";
 import { decodeToken } from "./authHelpers.js";
@@ -11,8 +11,6 @@ moment.locale('en-week-starts-monday', {
     dow: 1
   }
 });
-
-const GraphQLDateTime = graphqlIsoDate.GraphQLDateTime;
 
 console.log("NODE_ENV: ", process.env.NODE_ENV);
 
