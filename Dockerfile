@@ -1,4 +1,4 @@
-FROM node:10-alpine
+FROM node:16.15.1-alpine
 
 RUN npm install -g nodemon
 RUN apk add --no-cache mongodb-tools
