@@ -20,7 +20,7 @@ services:
       - .env
 
   mongo:
-    image: mongo
+    image: mongo:5.0
     container_name: diet-tracker-mongo
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ADMIN_USERNAME}
