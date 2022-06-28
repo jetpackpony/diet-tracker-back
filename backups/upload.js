@@ -1,7 +1,7 @@
-const fs = require('fs');
-const drive = require('@googleapis/drive');
+import fs from 'fs';
+import drive from '@googleapis/drive';
 
-async function runSample(fileName) {
+async function run(fileName) {
   const auth = new drive.auth.GoogleAuth({
     keyFile: process.env.SVC_ACCOUNT_FILE,
     scopes: 'https://www.googleapis.com/auth/drive',
@@ -27,9 +27,5 @@ async function runSample(fileName) {
   return res.data;
 }
 
-// if invoked directly (not tests), authenticate and run the samples
-if (module === require.main) {
-  const fileName = process.argv[2];
-  runSample(fileName).catch(console.error);
-}
-module.exports = runSample;
+const fileName = process.argv[2];
+run(fileName).catch(console.error);
