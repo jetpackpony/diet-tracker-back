@@ -1,13 +1,13 @@
-const { DataSource } = require('apollo-datasource');
-const ObjectID = require('mongodb').ObjectID;
-const { idsToStrings } = require("./helpers");
-const getWeeklyRecordsFeed = require("./weeklyRecordsFeed");
-const totals = require("./totals");
-const getRecords = require("./getRecords");
-const login = require("./login");
-const filterFoodItems = require("./filterFoodItems");
+import { DataSource } from 'apollo-datasource';
+import { ObjectId } from 'mongodb';
+import { idsToStrings } from "./helpers.js";
+import getWeeklyRecordsFeed from "./weeklyRecordsFeed/index.js";
+import totals from "./totals.js";
+import getRecords from "./getRecords.js";
+import login from "./login.js";
+import filterFoodItems from "./filterFoodItems.js";
 
-class FoodJournalAPI extends DataSource {
+export default class FoodJournalAPI extends DataSource {
   constructor({ db }) {
     super();
     this.db = db;
@@ -23,7 +23,7 @@ class FoodJournalAPI extends DataSource {
 
   async getFoodItemsByIDs(ids) {
     return this.db.collection("foodItems")
-      .find({ _id: { $in: ids.map(ObjectID) } })
+      .find({ _id: { $in: ids.map(ObjectId) } })
       .toArray()
       .then((items) => items.map(idsToStrings));
   }
@@ -43,7 +43,7 @@ class FoodJournalAPI extends DataSource {
       .aggregate([
         {
           $match: {
-            _id: ObjectID(id)
+            _id: ObjectId(id)
           }
         },
         {
@@ -79,7 +79,7 @@ class FoodJournalAPI extends DataSource {
 
   async createRecord({ foodItemID, weight, eatenAt, createdAt }) {
     return this.db.collection("records")
-      .insertOne({ foodItemID: ObjectID(foodItemID), weight, eatenAt, createdAt })
+      .insertOne({ foodItemID: ObjectId(foodItemID), weight, eatenAt, createdAt })
       .then((res) => (res.insertedId))
       .then((recId) => {
         return this.getRecordById(recId)
@@ -98,7 +98,7 @@ class FoodJournalAPI extends DataSource {
       carbs
     });
     return this.createRecord({
-      foodItemID: ObjectID(foodItemID),
+      foodItemID: ObjectId(foodItemID),
       weight,
       eatenAt,
       createdAt
@@ -108,7 +108,7 @@ class FoodJournalAPI extends DataSource {
   async updateRecord({ id, weight }) {
     return this.db.collection("records")
       .findOneAndUpdate(
-        { _id: ObjectID(id)},
+        { _id: ObjectId(id)},
         { $set: { weight }},
         { returnOriginal : false }
       )
@@ -120,7 +120,7 @@ class FoodJournalAPI extends DataSource {
   async deleteRecord(id) {
     return this.db.collection("records")
       .deleteOne(
-        { _id: ObjectID(id)},
+        { _id: ObjectId(id)},
       )
       .then(() => id);
   }
@@ -137,5 +137,3 @@ class FoodJournalAPI extends DataSource {
     return getWeeklyRecordsFeed(this.db, args);
   }
 }
-
-module.exports = FoodJournalAPI;

@@ -1,11 +1,11 @@
-const { ApolloServer, gql } = require('apollo-server');
-const { typeDefs } = require('./schema');
-const { resolvers } = require('./resolvers');
-const { GraphQLDateTime } = require("graphql-iso-date");
-const FoodJournalAPI = require("./datasources/foodJournalAPI");
-const { initDB } = require("./db");
-const { decodeToken } = require("./authHelpers");
-const moment = require("moment");
+import { ApolloServer, gql } from 'apollo-server';
+import { typeDefs } from './schema.js';
+import { resolvers } from './resolvers.js';
+import { GraphQLDateTime } from 'graphql-scalars';
+import FoodJournalAPI from "./datasources/foodJournalAPI/index.js";
+import { initDB } from "./db/index.js";
+import { decodeToken } from "./authHelpers.js";
+import moment from "moment";
 moment.locale('en-week-starts-monday', {
   week: {
     dow: 1

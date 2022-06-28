@@ -1,11 +1,11 @@
-const crypto = require('crypto');
-const jwt = require("jsonwebtoken");
+import crypto from 'crypto';
+import jwt from "jsonwebtoken";
 
-const encodeToken = (payload) => {
+export const encodeToken = (payload) => {
   return jwt.sign(payload, process.env["JWT_SECRET"]);
 };
 
-const decodeToken = (token) => {
+export const decodeToken = (token) => {
   try {
     const payload = jwt.verify(
       token.replace("Bearer ", ""),
@@ -17,14 +17,14 @@ const decodeToken = (token) => {
   }
 };
 
-const encodePassword = (password) => {
+export const encodePassword = (password) => {
   return crypto
     .createHmac('sha256', process.env["PASS_SECRET"])
     .update(password)
     .digest('hex');
 }
 
-function decorateObject(obj, cb) {
+export function decorateObject(obj, cb) {
   if (typeof obj === "object") {
     return Object.keys(obj).reduce((res, key) => {
       if (obj.hasOwnProperty(key)) {
@@ -37,7 +37,7 @@ function decorateObject(obj, cb) {
   }
 };
 
-const authResolverDecorator = (next) => (...args) => {
+export const authResolverDecorator = (next) => (...args) => {
   const { fieldName } = args[3];
   if (fieldName !== "login") {
     const { user } = args[2];
@@ -46,12 +46,4 @@ const authResolverDecorator = (next) => (...args) => {
     }
   }
   return next(...args);
-};
-
-module.exports = {
-  encodeToken,
-  encodePassword,
-  decodeToken,
-  decorateObject,
-  authResolverDecorator
 };

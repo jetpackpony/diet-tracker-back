@@ -1,6 +1,6 @@
-const { gql } = require('apollo-server');
+import { gql } from 'apollo-server';
 
-const typeDefs = gql`
+export const typeDefs = gql`
   type Query {
     getAllRecords: [Record]!
     recordsFeed(
@@ -113,5 +113,3 @@ const typeDefs = gql`
     carbs: Float!
   }
 `;
-
-module.exports = { typeDefs };

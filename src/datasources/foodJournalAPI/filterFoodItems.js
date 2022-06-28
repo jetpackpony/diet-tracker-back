@@ -1,5 +1,5 @@
-const escapeRegEx = require("escape-string-regexp");
-const { idsToStrings } = require("./helpers");
+import escapeRegEx from "escape-string-regexp";
+import { idsToStrings } from "./helpers.js";
 
 const buildRegexArray = (filter) => (
   filter
@@ -10,7 +10,7 @@ const buildRegexArray = (filter) => (
     }))
 );
 
-module.exports = async function filterFoodItems(db, { filter, limit = 5 }) {
+export default async function filterFoodItems(db, { filter, limit = 5 }) {
   return db.collection("foodItems")
     .find({
       $and: buildRegexArray(filter)

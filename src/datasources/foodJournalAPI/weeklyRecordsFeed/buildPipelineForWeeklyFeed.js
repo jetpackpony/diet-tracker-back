@@ -125,4 +125,4 @@ const buildPipelineForWeeklyFeed = (cursorRange) => {
   return pipeline;
 };
 
-module.exports = buildPipelineForWeeklyFeed;
+export default buildPipelineForWeeklyFeed;

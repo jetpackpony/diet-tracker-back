@@ -1,7 +1,7 @@
-const { encodePassword, encodeToken } = require("../../authHelpers");
-const { idsToStrings } = require("./helpers");
+import { encodePassword, encodeToken } from "../../authHelpers.js";
+import { idsToStrings } from "./helpers.js";
 
-module.exports = async function login(db, { userName, password }) {
+export default async function login(db, { userName, password }) {
   const user = await db.collection("users").findOne({ userName });
   if (!user) {
     throw new Error(`Can't find user "${userName}"`);

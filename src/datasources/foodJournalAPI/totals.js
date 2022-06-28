@@ -1,6 +1,6 @@
-const moment = require("moment");
+import moment from "moment";
 
-module.exports = async function totals(db, { startInterval, endInterval }) {
+export default async function totals(db, { startInterval, endInterval }) {
   const res = await db.collection('records')
     .aggregate([
       {
