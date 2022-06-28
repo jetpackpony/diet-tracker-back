@@ -1,13 +1,11 @@
 import { DataSource } from 'apollo-datasource';
-import mongodb from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { idsToStrings } from "./helpers.js";
 import getWeeklyRecordsFeed from "./weeklyRecordsFeed/index.js";
 import totals from "./totals.js";
 import getRecords from "./getRecords.js";
 import login from "./login.js";
 import filterFoodItems from "./filterFoodItems.js";
-
-const ObjectID = mongodb.ObjectID;
 
 export default class FoodJournalAPI extends DataSource {
   constructor({ db }) {
@@ -25,7 +23,7 @@ export default class FoodJournalAPI extends DataSource {
 
   async getFoodItemsByIDs(ids) {
     return this.db.collection("foodItems")
-      .find({ _id: { $in: ids.map(ObjectID) } })
+      .find({ _id: { $in: ids.map(ObjectId) } })
       .toArray()
       .then((items) => items.map(idsToStrings));
   }
@@ -45,7 +43,7 @@ export default class FoodJournalAPI extends DataSource {
       .aggregate([
         {
           $match: {
-            _id: ObjectID(id)
+            _id: ObjectId(id)
           }
         },
         {
@@ -81,7 +79,7 @@ export default class FoodJournalAPI extends DataSource {
 
   async createRecord({ foodItemID, weight, eatenAt, createdAt }) {
     return this.db.collection("records")
-      .insertOne({ foodItemID: ObjectID(foodItemID), weight, eatenAt, createdAt })
+      .insertOne({ foodItemID: ObjectId(foodItemID), weight, eatenAt, createdAt })
       .then((res) => (res.insertedId))
       .then((recId) => {
         return this.getRecordById(recId)
@@ -100,7 +98,7 @@ export default class FoodJournalAPI extends DataSource {
       carbs
     });
     return this.createRecord({
-      foodItemID: ObjectID(foodItemID),
+      foodItemID: ObjectId(foodItemID),
       weight,
       eatenAt,
       createdAt
@@ -110,7 +108,7 @@ export default class FoodJournalAPI extends DataSource {
   async updateRecord({ id, weight }) {
     return this.db.collection("records")
       .findOneAndUpdate(
-        { _id: ObjectID(id)},
+        { _id: ObjectId(id)},
         { $set: { weight }},
         { returnOriginal : false }
       )
@@ -122,7 +120,7 @@ export default class FoodJournalAPI extends DataSource {
   async deleteRecord(id) {
     return this.db.collection("records")
       .deleteOne(
-        { _id: ObjectID(id)},
+        { _id: ObjectId(id)},
       )
       .then(() => id);
   }

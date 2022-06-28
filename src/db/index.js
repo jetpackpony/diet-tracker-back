@@ -1,7 +1,6 @@
-import mongodb from 'mongodb';
+import { MongoClient } from 'mongodb';
 import { encodePassword } from "../authHelpers.js";
 
-const MongoClient = mongodb.MongoClient;
 const {
   MONGO_APP_USERNAME, MONGO_APP_PASSWORD,
   MONGO_HOST, MONGO_PORT, MONGO_DB_NAME,
