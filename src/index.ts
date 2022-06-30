@@ -1,18 +1,16 @@
-import { ApolloServer, gql } from 'apollo-server';
-import { typeDefs } from './schema.js';
-import { resolvers } from './resolvers.js';
-import { GraphQLDateTime } from 'graphql-scalars';
-import FoodJournalAPI from "./datasources/foodJournalAPI/index.js";
+import { ApolloServer } from 'apollo-server';
 import { initDB } from "./db/index.js";
 import { decodeToken } from "./authHelpers.js";
 import moment from "moment";
+import { schema } from './schema.js';
+import type { Context } from './context.js';
 moment.locale('en-week-starts-monday', {
   week: {
     dow: 1
   }
 });
 
-console.log("NODE_ENV: ", process.env.NODE_ENV);
+console.log("NODE_ENV: ", process.env['NODE_ENV']);
 
 (async () => {
   try {
@@ -22,18 +20,11 @@ console.log("NODE_ENV: ", process.env.NODE_ENV);
     }
 
     const server = new ApolloServer({
-      typeDefs,
-      dataSources: () => ({
-        foodJournalAPI: new FoodJournalAPI({ db })
-      }),
-      resolvers: {
-        DateTime: GraphQLDateTime,
-        ...resolvers,
-      },
-      context: ({ req }) => {
+      schema,
+      context: ({ req }): Context => {
         const token = req.headers.authorization || "";
-        const user = decodeToken(token);
-        return { user };
+        const session = decodeToken(token);
+        return { session, db };
       }
     });
 

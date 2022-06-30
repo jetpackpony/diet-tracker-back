@@ -3,11 +3,10 @@
   "verbose": true,
   "ignore": [
     ".git",
-    "node_modules/**/node_modules",
-    "lib/**/*"
+    "node_modules/**/node_modules"
   ],
   "execMap": {
-    "ts": "node --loader ts-node/esm"
+    "ts": "node --loader ts-node/esm/transpile-only --inspect=0.0.0.0:9229"
   },
   "ext": "ts,js,json"
 }

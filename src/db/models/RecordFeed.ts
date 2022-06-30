@@ -1,5 +1,11 @@
 import moment from "moment";
-import { idsToStrings } from "./helpers.js";
+import type { Db } from "mongodb";
+import { RecordModel, validateRecord } from "./Record.js";
+
+export interface RecordFeedModel {
+  cursor: string,
+  records: RecordModel[]
+};
 
 const unpackCursor = (cursor) => {
   if (!cursor) return { success: false };
@@ -13,9 +19,8 @@ const unpackCursor = (cursor) => {
   };
 };
 
-const buildPipeline = (cursor, limit) => {
+const buildPipeline = (curs, limit) => {
   const pipeline = [];
-  const curs = unpackCursor(cursor);
   if (curs.success) {
     pipeline.push(
       {
@@ -59,30 +64,23 @@ const buildPipeline = (cursor, limit) => {
   return pipeline;
 };
 
-export default async function getRecords(db, { cursor = null, limit = 50 }) {
-  const res = await db.collection("records")
-    .aggregate(buildPipeline(cursor, limit))
+export async function getRecordFeed(
+  db: Db,
+  { cursor = "", limit = 50 }
+): Promise<RecordFeedModel> {
+  const records = await db.collection("records")
+    .aggregate(buildPipeline(unpackCursor(cursor), limit))
     .toArray()
-    .then((recs) => {
-      return recs.map(
-        (rec) => ({
-          ...idsToStrings(rec),
-          foodItem: {
-            ...idsToStrings(rec.foodItem)
-          }
-        })
-      );
-    })
-    .then((recs) => {
-      const last = recs[recs.length - 1];
-      const newCursor =
-        last
-          ? `${last.eatenAt.toISOString()}_${last.createdAt.toISOString()}`
-          : cursor;
-      return {
-        cursor: newCursor,
-        records: recs
-      };
-    });
-  return res;
-}
+    .then((recs) => recs.filter(validateRecord));
+
+  const last = records[records.length - 1];
+  const newCursor = (
+    last
+      ? `${last.eatenAt.toISOString()}_${last.createdAt.toISOString()}`
+      : cursor
+  );
+  return {
+    cursor: newCursor,
+    records
+  };
+};
