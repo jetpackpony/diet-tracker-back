@@ -1,5 +1,5 @@
-import moment from "moment";
-import type { Db } from "mongodb";
+import moment, { Moment } from "moment";
+import type { Db, Document } from "mongodb";
 import { RecordModel, validateRecord } from "./Record.js";
 
 export interface RecordFeedModel {
@@ -7,19 +7,34 @@ export interface RecordFeedModel {
   records: RecordModel[]
 };
 
-const unpackCursor = (cursor) => {
-  if (!cursor) return { success: false };
-  let [eatenAt, createdAt] = cursor.split("_");
-  eatenAt = moment(eatenAt);
-  createdAt = moment(createdAt);
+interface FeedCursorSuccess {
+  success: true,
+  eatenAt: Moment,
+  createdAt: Moment
+};
+interface FeedCursorFail {
+  success: false
+};
+type FeedCursor = FeedCursorSuccess | FeedCursorFail;
+
+const unpackCursor = (cursor: string): FeedCursor => {
+  if (!cursor) {
+    return { success: false };
+  }
+  const cursSplit = cursor.split("_");
+  const eatenAt = moment(cursSplit[0]);
+  const createdAt = moment(cursSplit[1]);
+  if (!eatenAt.isValid() || !createdAt.isValid()) {
+    return { success: false };
+  }
   return {
-    success: eatenAt.isValid() && createdAt.isValid,
+    success: true,
     eatenAt,
     createdAt
   };
 };
 
-const buildPipeline = (curs, limit) => {
+const buildPipeline = (curs: FeedCursor, limit: number): Document[] => {
   const pipeline = [];
   if (curs.success) {
     pipeline.push(

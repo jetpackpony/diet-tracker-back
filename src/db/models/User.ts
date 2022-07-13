@@ -18,7 +18,7 @@ export interface LoginResultModel {
   token: string
 }
 
-const validateUser = (user: any): user is UserModel => {
+export const validateUser = (user: any): user is UserModel => {
   validateObjectProperty(user, "_id", ObjectId);
   validateObjectProperty(user, "passHash", "string");
   validateObjectProperty(user, "userName", "string");

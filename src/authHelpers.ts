@@ -46,30 +46,6 @@ export const encodePassword = (password: string): string => {
     .digest('hex');
 }
 
-export function decorateObject(obj, cb) {
-  if (typeof obj === "object" && obj !== null) {
-    return Object.keys(obj).reduce((res, key) => {
-      if (obj.hasOwnProperty(key)) {
-        res[key] = decorateObject(obj[key], cb);
-      }
-      return res;
-    }, {});
-  } else {
-    return cb(obj);
-  }
-};
-
-export const authResolverDecorator = (next) => (...args) => {
-  const { fieldName } = args[3];
-  if (fieldName !== "login") {
-    const { user } = args[2];
-    if (!user) {
-      throw new Error("You need to login to access this query");
-    }
-  }
-  return next(...args);
-};
-
 /**
  * Wrapper for resolvers to check user's login status. If the user is logged in
  * the passed resolver is called. Otherwise, it throws an error
