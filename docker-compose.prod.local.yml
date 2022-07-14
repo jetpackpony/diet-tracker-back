@@ -1,25 +1,24 @@
 version: '3.7'
 services:
   app:
-    build:
-      context: .
-      target: development
+    image: diet-tracker-back
     container_name: diet-tracker-back
-    depends_on:
-      - mongo
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
+    restart: always
+    networks:
+      - default
+    expose:
+      - 4000
     ports:
       - 4000:4000
-      - 9229:9229
-    command: npm run start:dev
     environment:
       - SVC_ACCOUNT_FILE=/run/secrets/svc_account.json
     secrets:
       - svc_account.json
     env_file:
       - .env
+    command: sh -c "./backups/setup-cron.sh && npm run start:prod"
+    depends_on:
+      - mongo
 
   mongo:
     image: mongo:5.0
@@ -31,14 +30,14 @@ services:
       MONGO_USERNAME: ${MONGO_APP_USERNAME}
       MONGO_PASSWORD: ${MONGO_APP_PASSWORD}
     volumes:
-      - data-volume:/data/db
+      - diet-tracker-data-volume:/data/db
       - ./mongo/init-scripts/dev:/docker-entrypoint-initdb.d
-    ports:
-      - 27017:27017
+    expose:
+      - 27017
 
 volumes:
-  data-volume:
+  diet-tracker-data-volume:
 
 secrets:
   svc_account.json:
-    file: ./.secrets/svc_account.json
+    file: .secrets/svc_account.json

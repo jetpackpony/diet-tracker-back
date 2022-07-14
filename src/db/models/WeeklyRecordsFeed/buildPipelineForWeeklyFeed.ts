@@ -1,5 +1,7 @@
+import type { Document } from "mongodb";
+import type { CursorRange } from "./cursorHelpers.js";
 
-const buildPipelineForWeeklyFeed = (cursorRange) => {
+export function buildPipelineForWeeklyFeed(cursorRange: CursorRange): Document[] {
   const pipeline = [];
   if (cursorRange.to) {
     // If the end date is set, specify the range
@@ -45,13 +47,6 @@ const buildPipelineForWeeklyFeed = (cursorRange) => {
     $unwind: {
       path: "$foodItem",
       preserveNullAndEmptyArrays: false
-    }
-  });
-  // Convert _id fields into strings
-  pipeline.push({
-    $addFields: {
-      id: { $toString: "$_id" },
-      "foodItem.id": { $toString: "$foodItem._id" },
     }
   });
   // Group records by day they are eaten and calculate totals for each day
@@ -124,5 +119,3 @@ const buildPipelineForWeeklyFeed = (cursorRange) => {
   });
   return pipeline;
 };
-
-export default buildPipelineForWeeklyFeed;

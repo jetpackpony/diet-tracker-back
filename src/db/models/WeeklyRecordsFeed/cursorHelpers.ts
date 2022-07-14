@@ -1,16 +1,26 @@
-import moment from "moment";
+import moment, { Moment } from "moment";
 
-export const makeNewCursor = (cursorRange) => {
+export interface CursorRange {
+  from: Moment,
+  to?: Moment
+};
+
+export const makeNewCursor = (cursorRange: CursorRange): string => {
   return cursorRange.from.toISOString();
 };
 
-const unpackWeeklyCursor = (cursor) => {
-  if (!cursor) return false;
-  const value = moment(cursor);
-  return value.isValid() ? value : false;
+const unpackWeeklyCursor = (cursor: string): Moment | undefined => {
+  if (!cursor) return;
+  if (cursor) {
+    const value = moment(cursor);
+    if (value.isValid()) {
+      return value;
+    }
+  }
+  return;
 };
 
-export const getCursorRange = (cursor, limit) => {
+export const getCursorRange = (cursor: string, limit: number): CursorRange => {
   let curs = unpackWeeklyCursor(cursor);
   if (curs) {
     // If the cursor is set, get only the records for specified weeks

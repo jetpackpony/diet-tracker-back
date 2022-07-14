@@ -35,3 +35,6 @@ gcloud/certs/*
 
 # secrets
 .secrets
+
+# Build
+build/

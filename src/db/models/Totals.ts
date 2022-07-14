@@ -1,6 +1,31 @@
 import moment from "moment";
+import type { Db } from "mongodb"
+import { validateObjectProperty } from "../../helpers.js";
 
-export default async function totals(db, { startInterval, endInterval }) {
+export interface TotalsModel {
+  calories: number,
+  protein: number,
+  fat: number,
+  carbs: number
+};
+
+export interface TotalsProps {
+  startInterval: Date,
+  endInterval: Date
+};
+
+export const validateTotals = (totals: any): totals is TotalsModel => {
+  validateObjectProperty(totals, "calories", "number");
+  validateObjectProperty(totals, "protein", "number");
+  validateObjectProperty(totals, "fat", "number");
+  validateObjectProperty(totals, "carbs", "number");
+  return totals;
+};
+
+export async function getTotals(
+  db: Db,
+  { startInterval, endInterval }: TotalsProps
+): Promise<TotalsModel> {
   const res = await db.collection('records')
     .aggregate([
       {
@@ -35,6 +60,10 @@ export default async function totals(db, { startInterval, endInterval }) {
         }
       }
     ])
-    .toArray();
+    .toArray()
+    .then((res) => res.filter(validateTotals));
+  if (!res[0]) {
+    throw new Error("Couldn't get totals");
+  }
   return res[0];
 };
