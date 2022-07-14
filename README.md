@@ -118,3 +118,8 @@ services:
   ```bash
   cd backups && ./restore.sh dump.gz.archive
   ```
+
+## Restoring a prod backup into a dev database
+
+  Drop the dietTrackerDEV database, then use --nsFrom="dietTracker.*" --nsTo="dietTrackerDEV.*" when restoring.
+  Then Change the user/password to the DEV ones
