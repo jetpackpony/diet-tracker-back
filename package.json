@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "docker-compose -f docker-compose.dev.yml up --build app",
+    "start:update": "docker-compose -f docker-compose.dev.yml up --build -V app",
     "start:dev": "nodemon src/index.ts",
     "start:prod": "node ./build/index.js",
     "build": "tsc -p .",
