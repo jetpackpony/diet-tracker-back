@@ -10,8 +10,8 @@ scalar DateTime
 type DayRecords {
   dayEnd: DateTime!
   dayStart: DateTime!
-  records: [Record]!
-  totals: Totals
+  records: [Record!]!
+  totals: Totals!
 }
 
 type FoodItem {
@@ -37,10 +37,10 @@ type Mutation {
 }
 
 type Query {
-  filterFoodItems(filter: String!, limit: Int!): [FoodItem]!
-  foodItems: [FoodItem]!
-  getAllRecords: [Record]!
-  getFoodItems(ids: [ID!]!): [FoodItem]!
+  filterFoodItems(filter: String!, limit: Int!): [FoodItem!]!
+  foodItems: [FoodItem!]!
+  getAllRecords: [Record!]!
+  getFoodItems(ids: [ID!]!): [FoodItem!]!
   getRecord(id: ID!): Record
   login(password: String!, userName: String!): LoginResult!
   recordsFeed(cursor: String!, limit: Int!): RecordFeed!
@@ -58,7 +58,7 @@ type Record {
 
 type RecordFeed {
   cursor: String!
-  records: [Record]!
+  records: [Record!]!
 }
 
 type Totals {
@@ -74,13 +74,13 @@ type User {
 }
 
 type WeekRecords {
-  days: [DayRecords]!
-  totals: Totals
+  days: [DayRecords!]!
+  totals: Totals!
   weekEnd: DateTime!
   weekStart: DateTime!
 }
 
 type WeeklyRecordsFeed {
   cursor: String!
-  weeks: [WeekRecords]!
+  weeks: [WeekRecords!]!
 }

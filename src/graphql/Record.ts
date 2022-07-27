@@ -31,7 +31,7 @@ export const RecordFeed = objectType({
   },
   definition(t) {
     t.string("cursor");
-    t.field("records", { type: list(nullable("Record")) })
+    t.field("records", { type: list("Record") })
   }
 });
 
@@ -48,7 +48,7 @@ export const RecordQuery = extendType({
       })
     });
     t.field("getAllRecords", {
-      type: list(nullable("Record")),
+      type: list("Record"),
       resolve: withLogin(async function resolve(_root, _args, ctx) {
         return (await getRecordFeed(ctx.db, {})).records;
       })

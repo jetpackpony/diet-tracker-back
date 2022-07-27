@@ -27,13 +27,13 @@ export const FoodItemQuery = extendType({
   type: "Query",
   definition(t) {
     t.field("foodItems", {
-      type: list(nullable("FoodItem")),
+      type: list("FoodItem"),
       resolve: withLogin(async function resolve(_root, _args, ctx) {
         return getFoodItems(ctx.db);
       })
     });
     t.field("getFoodItems", {
-      type: list(nullable("FoodItem")),
+      type: list("FoodItem"),
       args: {
         ids: list(idArg())
       },
@@ -42,7 +42,7 @@ export const FoodItemQuery = extendType({
       })
     });
     t.field("filterFoodItems", {
-      type: list(nullable("FoodItem")),
+      type: list("FoodItem"),
       args: {
         filter: stringArg(),
         limit: intArg()

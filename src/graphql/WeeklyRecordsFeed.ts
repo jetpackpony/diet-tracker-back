@@ -1,4 +1,4 @@
-import { extendType, intArg, list, nullable, objectType, stringArg } from "nexus";
+import { extendType, intArg, list, objectType, stringArg } from "nexus";
 import { join } from "path";
 import { withLogin } from "../authHelpers.js";
 import { getWeeklyRecordsFeed } from "../db/models/index.js";
@@ -12,8 +12,8 @@ export const DayRecords = objectType({
   definition(t) {
     t.field("dayStart", { type: "DateTime" });
     t.field("dayEnd", { type: "DateTime" });
-    t.field("totals", { type: nullable("Totals") });
-    t.field("records", { type: list(nullable("Record")) });
+    t.field("totals", { type: "Totals" });
+    t.field("records", { type: list("Record") });
   }
 });
 
@@ -26,8 +26,8 @@ export const WeekRecords = objectType({
   definition(t) {
     t.field("weekStart", { type: "DateTime" });
     t.field("weekEnd", { type: "DateTime" });
-    t.field("totals", { type: nullable("Totals") });
-    t.field("days", { type: list(nullable("DayRecords")) });
+    t.field("totals", { type: "Totals" });
+    t.field("days", { type: list("DayRecords") });
   }
 });
 
@@ -39,7 +39,7 @@ export const WeeklyRecordsFeed = objectType({
   },
   definition(t) {
     t.string("cursor");
-    t.field("weeks", { type: list(nullable("WeekRecords")) });
+    t.field("weeks", { type: list("WeekRecords") });
   }
 });
 

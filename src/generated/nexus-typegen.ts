@@ -72,8 +72,8 @@ export interface NexusGenFieldTypes {
   DayRecords: { // field return type
     dayEnd: NexusGenScalars['DateTime']; // DateTime!
     dayStart: NexusGenScalars['DateTime']; // DateTime!
-    records: Array<NexusGenRootTypes['Record'] | null>; // [Record]!
-    totals: NexusGenRootTypes['Totals'] | null; // Totals
+    records: NexusGenRootTypes['Record'][]; // [Record!]!
+    totals: NexusGenRootTypes['Totals']; // Totals!
   }
   FoodItem: { // field return type
     calories: number; // Float!
@@ -95,10 +95,10 @@ export interface NexusGenFieldTypes {
     updateRecord: NexusGenRootTypes['Record']; // Record!
   }
   Query: { // field return type
-    filterFoodItems: Array<NexusGenRootTypes['FoodItem'] | null>; // [FoodItem]!
-    foodItems: Array<NexusGenRootTypes['FoodItem'] | null>; // [FoodItem]!
-    getAllRecords: Array<NexusGenRootTypes['Record'] | null>; // [Record]!
-    getFoodItems: Array<NexusGenRootTypes['FoodItem'] | null>; // [FoodItem]!
+    filterFoodItems: NexusGenRootTypes['FoodItem'][]; // [FoodItem!]!
+    foodItems: NexusGenRootTypes['FoodItem'][]; // [FoodItem!]!
+    getAllRecords: NexusGenRootTypes['Record'][]; // [Record!]!
+    getFoodItems: NexusGenRootTypes['FoodItem'][]; // [FoodItem!]!
     getRecord: NexusGenRootTypes['Record'] | null; // Record
     login: NexusGenRootTypes['LoginResult']; // LoginResult!
     recordsFeed: NexusGenRootTypes['RecordFeed']; // RecordFeed!
@@ -114,7 +114,7 @@ export interface NexusGenFieldTypes {
   }
   RecordFeed: { // field return type
     cursor: string; // String!
-    records: Array<NexusGenRootTypes['Record'] | null>; // [Record]!
+    records: NexusGenRootTypes['Record'][]; // [Record!]!
   }
   Totals: { // field return type
     calories: number; // Float!
@@ -127,14 +127,14 @@ export interface NexusGenFieldTypes {
     userName: string; // String!
   }
   WeekRecords: { // field return type
-    days: Array<NexusGenRootTypes['DayRecords'] | null>; // [DayRecords]!
-    totals: NexusGenRootTypes['Totals'] | null; // Totals
+    days: NexusGenRootTypes['DayRecords'][]; // [DayRecords!]!
+    totals: NexusGenRootTypes['Totals']; // Totals!
     weekEnd: NexusGenScalars['DateTime']; // DateTime!
     weekStart: NexusGenScalars['DateTime']; // DateTime!
   }
   WeeklyRecordsFeed: { // field return type
     cursor: string; // String!
-    weeks: Array<NexusGenRootTypes['WeekRecords'] | null>; // [WeekRecords]!
+    weeks: NexusGenRootTypes['WeekRecords'][]; // [WeekRecords!]!
   }
 }
 
