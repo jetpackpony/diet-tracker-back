@@ -35,7 +35,7 @@ To install an npm package:
   ```
 * Run the containers:
   ```bash
-  docker-compose -f docker-compose.prod.local.yml up
+  docker compose -f docker-compose.prod.local.yml up
   ```
 
 
@@ -69,8 +69,8 @@ to your production machine:
   ```
 * To start the container with the app, run:
   ```bash
-  docker-compose -f docker-compose.prod.yml pull
-  docker-compose -f docker-compose.prod.yml up -d
+  docker compose -f docker-compose.prod.yml pull
+  docker compose -f docker-compose.prod.yml up -d
   ```
 This setup works with [traefik](https://docs.traefik.io/user-guide/docker-and-lets-encrypt/) which is setup in [jetpackpony/vm-setup](https://github.com/jetpackpony/vm-setup) repo.
 
