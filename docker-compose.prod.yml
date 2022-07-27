@@ -28,6 +28,7 @@ services:
   mongo:
     image: mongo:5.0
     container_name: diet-tracker-mongo
+    restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ADMIN_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ADMIN_PASSWORD}
