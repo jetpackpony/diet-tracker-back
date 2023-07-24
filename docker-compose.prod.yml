@@ -15,13 +15,23 @@ services:
       - "traefik.frontend.rule=Host:${VIRTUAL_HOST}"
       - "traefik.port=4000"
       - "traefik.protocol=http"
+    env_file:
+      - .env
+    command: npm run start:prod
+    depends_on:
+      - mongo
+
+  backups:
+    image: jetpackpony/diet-tracker-back
+    container_name: diet-tracker-backups
+    restart: always
     environment:
       - SVC_ACCOUNT_FILE=/run/secrets/svc_account.json
     secrets:
       - svc_account.json
     env_file:
       - .env
-    command: sh -c "./backups/setup-cron.sh && npm run start:prod"
+    command: npm run backup:prod
     depends_on:
       - mongo
 

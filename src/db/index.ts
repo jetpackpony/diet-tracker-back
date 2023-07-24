@@ -7,7 +7,7 @@ const {
   APP_USER_NAME, APP_USER_PASSWORD
 } = process.env;
 
-const url = `mongodb://${MONGO_APP_USERNAME}:${MONGO_APP_PASSWORD}`
+export const DBURL = `mongodb://${MONGO_APP_USERNAME}:${MONGO_APP_PASSWORD}`
   + `@${MONGO_HOST}:${MONGO_PORT}/${MONGO_DB_NAME}`;
 
 const createOrUpdateDefaultUser = async (db: Db): Promise<UserModel> => {
@@ -64,7 +64,7 @@ const createOrUpdateDefaultUser = async (db: Db): Promise<UserModel> => {
 };
 
 export const initDB = async () => {
-  const client = new MongoClient(url);
+  const client = new MongoClient(DBURL);
   try {
     await client.connect();
     const db = client.db(MONGO_DB_NAME);
