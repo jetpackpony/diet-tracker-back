@@ -11,10 +11,11 @@ A backend for diet-tracker.
       npm run start
       ```
 
-This will run 2 containers:
+This will run 3 containers:
 
   1. An app itself. App is run with `nodemon` and listens to the changes in the local directory and reloads the server. The app runs on port 4000. Also, `nodemon` is run with `--inspect` flag so the debugger is available on port `9229`.
   2. A mondodb instance, which is exposed on port 27017
+  3. A backups container which runs backups on schedule. The schedule is controlled by `BACKUP_CRON_SETUP` env virable. Backups are automatically uploaded to google drive folder setup by `BACKUP_FOLDER_ID` variable.
 
 `docker-compose` creates a persistent volume called `data-volume`, where the database is stored. When the volume doesn't exist (dropped or not yet created), mongodb will run init scripts located in `./mongo/init-scripts` directory. These will create an admin password with credentials from `MONGO_ADMIN_USERNAME` and `MONGO_ADMIN_PASSWORD` env virables. It will also create a user with credentials from `MONGO_USERNAME` and `MONGO_PASSWORD` and make it an admin of the database named `MONGO_INITDB_DATABASE`.
 
@@ -90,33 +91,41 @@ services:
   Shell into the container:
 
   ```bash
-  docker exec -it CONTAINER_NAME /bin/sh
+  docker exec -it diet-tracker-backups /bin/sh
   ```
 
-  Run the `backup.sh` script:
+  Run the `backupOnce:prod` command:
 
   ```bash
-  ./backup.sh
+  npm run backupOnce:prod _targetFileName_
   ```
+
+  This will create a dump file at specified location. To copy it out of docker
+  image, exit from container to a host machine then run:
+
+  ```bash
+  docker cp diet-tracker-backups:/file/path/within/container /host/path/target
+  ```
+
 
 ## Restoring a backup
 
   Copy the archive file onto container's file system:
 
   ```bash
-  docker cp dump.gz.archive CONTAINER_NAME:/usr/src/app/backups
+  docker cp dump.gz.archive diet-tracker-backups:/usr/src/app/backups
   ```
 
   Shell into the container:
 
   ```bash
-  docker exec -it CONTAINER_NAME /bin/sh
+  docker exec -it diet-tracker-backups /bin/sh
   ```
 
-  Run the `restore.sh` script:
+  Run the `restore:prod` script:
 
   ```bash
-  cd backups && ./restore.sh dump.gz.archive
+  npm run restore:prod backups/dump.gz.archive
   ```
 
 ## Restoring a prod backup into a dev database
