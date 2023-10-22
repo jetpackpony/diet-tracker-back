@@ -10,11 +10,19 @@ services:
     expose:
       - 4000
     labels:
-      - "traefik.docker.network=web"
       - "traefik.enable=true"
-      - "traefik.frontend.rule=Host:${VIRTUAL_HOST}"
-      - "traefik.port=4000"
-      - "traefik.protocol=http"
+
+      - "traefik.http.routers.dietTracker_insecure.rule=Host(`${VIRTUAL_HOST}`)"
+      - "traefik.http.routers.dietTracker_insecure.entrypoints=web"
+      - "traefik.http.routers.dietTracker_insecure.middlewares=https_redirect"
+
+      - "traefik.http.routers.dietTracker.rule=Host(`${VIRTUAL_HOST}`)"
+      - "traefik.http.routers.dietTracker.entrypoints=websecure"
+      - "traefik.http.routers.dietTracker.tls.certresolver=myresolver"
+
+      - "traefik.http.middlewares.https_redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.https_redirect.redirectscheme.permanent=true"
+
     env_file:
       - .env
     command: npm run start:prod
