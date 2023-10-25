@@ -42,3 +42,51 @@ export async function login(db: Db, { userName, password }: UserProps): Promise<
     token: encodeToken(session).token
   };
 };
+
+export async function createOrUpdateUser(db: Db, { userName, password }: UserProps): Promise<UserModel> {
+  if (userName == undefined) {
+    throw new Error("App user name is not set. Won't connect to the DB like this!");
+  }
+  if (password == undefined) {
+    throw new Error("App user password is not set. Won't connect to the DB like this!");
+  }
+  const user = await db.collection("users").findOne({ userName });
+  if (!user || !validateUser(user)) {
+    const inserted = await db.collection("users").insertOne({
+      userName,
+      passHash: encodePassword(password)
+    });
+    if (!inserted.insertedId) {
+      throw new Error(`Failed to create a user "${userName}"!`);
+    }
+    const newUser = await db.collection("users").findOne({
+      _id: inserted.insertedId
+    });
+    if (!validateUser(newUser)) {
+      throw new Error("Failed to retrieve an inserted user!");
+    }
+    return newUser;
+  }
+
+  if (user.passHash !== encodePassword(password)) {
+    const newUser = await db.collection("users")
+      .findOneAndUpdate(
+        {
+          _id: user._id,
+        },
+        {
+          $set: {
+            passHash: encodePassword(password)
+          }
+        },
+        {
+          returnDocument: "after"
+        }
+      );
+    if (!newUser || !validateUser(newUser)) {
+      throw new Error("Failed to update a default user!");
+    }
+    return newUser;
+  }
+  return user;
+};
