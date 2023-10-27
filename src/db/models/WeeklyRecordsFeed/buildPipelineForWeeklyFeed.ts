@@ -1,8 +1,16 @@
-import type { Document } from "mongodb";
+import { ObjectId, type Document } from "mongodb";
 import type { CursorRange } from "./cursorHelpers.js";
 
-export function buildPipelineForWeeklyFeed(cursorRange: CursorRange): Document[] {
+export function buildPipelineForWeeklyFeed(userID: string, cursorRange: CursorRange): Document[] {
   const pipeline = [];
+  // Filter by userID
+  pipeline.push(
+    {
+      $match: {
+        userID: new ObjectId(userID)
+      }
+    }
+  );
   if (cursorRange.to) {
     // If the end date is set, specify the range
     pipeline.push(
@@ -16,8 +24,8 @@ export function buildPipelineForWeeklyFeed(cursorRange: CursorRange): Document[]
       }
     );
   } else {
-    // If the end date is not set, get the records starting from current week and
-    // into the future
+    // If the end date is not set, get the records starting from
+    // the beginning of the current week and into the future
     pipeline.push(
       {
         $match: {
