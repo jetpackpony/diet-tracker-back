@@ -82,6 +82,7 @@ export interface NexusGenFieldTypes {
     id: string; // ID!
     protein: number; // Float!
     title: string; // String!
+    userID: string; // ID!
   }
   LoginResult: { // field return type
     token: string; // String!
@@ -152,6 +153,7 @@ export interface NexusGenFieldTypeNames {
     id: 'ID'
     protein: 'Float'
     title: 'String'
+    userID: 'ID'
   }
   LoginResult: { // field return type name
     token: 'String'

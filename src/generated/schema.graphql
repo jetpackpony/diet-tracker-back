@@ -21,6 +21,7 @@ type FoodItem {
   id: ID!
   protein: Float!
   title: String!
+  userID: ID!
 }
 
 type LoginResult {
