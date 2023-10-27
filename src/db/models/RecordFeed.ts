@@ -36,40 +36,44 @@ const unpackCursor = (cursor: string): FeedCursor => {
 
 const buildPipeline = (userID: string, curs: FeedCursor, limit: number): Document[] => {
   const pipeline: Document[] = [];
-  const conditions: Document[] = [
-    { userID: new ObjectId(userID) }
-  ];
-  if (curs.success) {
-    conditions.push(
-      {
-        $or: [
-          { eatenAt: { $lt: curs.eatenAt.toDate() } },
-          {
-            $and: [
-              { eatenAt: { $eq: curs.eatenAt.toDate() } },
-              { createdAt: { $lt: curs.createdAt.toDate() } },
-            ]
-          }
-        ]
-      }
-    );
-  }
+  // Filter by userID
   pipeline.push(
     {
       $match: {
-        $and: conditions
+        userID: new ObjectId(userID)
       }
     }
   );
+  // Filter by cursor bounds if cursor was specified
+  if (curs.success) {
+    pipeline.push(
+      {
+        $match: {
+          $or: [
+            { eatenAt: { $lt: curs.eatenAt.toDate() } },
+            {
+              $and: [
+                { eatenAt: { $eq: curs.eatenAt.toDate() } },
+                { createdAt: { $lt: curs.createdAt.toDate() } },
+              ]
+            }
+          ]
+        }
+      }
+    );
+  }
+  // Sort by date
   pipeline.push({
     $sort: {
       "eatenAt": -1,
       "createdAt": -1
     }
   });
+  // Limit
   pipeline.push({
     $limit: limit
   });
+  // Dereference foodItem keys
   pipeline.push({
     $lookup: {
       from: "foodItems",
@@ -78,6 +82,7 @@ const buildPipeline = (userID: string, curs: FeedCursor, limit: number): Documen
       as: "foodItem"
     }
   });
+  // Add foodItems' data into the result
   pipeline.push({
     $unwind: {
       path: "$foodItem",
