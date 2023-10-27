@@ -55,7 +55,7 @@ export const RecordQuery = extendType({
     t.field("getAllRecords", {
       type: list("Record"),
       resolve: withLogin(async function resolve(_root, _args, ctx) {
-        return (await getRecordFeed(ctx.db, {})).records;
+        return (await getRecordFeed(ctx.db, ctx.session.userId, {})).records;
       })
     });
     t.field("recordsFeed", {
@@ -65,7 +65,7 @@ export const RecordQuery = extendType({
         limit: intArg()
       },
       resolve: withLogin(async function resolve(_root, _args, ctx) {
-        return getRecordFeed(ctx.db, _args);
+        return getRecordFeed(ctx.db, ctx.session.userId, _args);
       })
     });
   }
