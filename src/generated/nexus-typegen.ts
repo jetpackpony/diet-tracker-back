@@ -111,6 +111,7 @@ export interface NexusGenFieldTypes {
     eatenAt: NexusGenScalars['DateTime']; // DateTime!
     foodItem: NexusGenRootTypes['FoodItem']; // FoodItem!
     id: string; // ID!
+    userID: string; // ID!
     weight: number; // Int!
   }
   RecordFeed: { // field return type
@@ -182,6 +183,7 @@ export interface NexusGenFieldTypeNames {
     eatenAt: 'DateTime'
     foodItem: 'FoodItem'
     id: 'ID'
+    userID: 'ID'
     weight: 'Int'
   }
   RecordFeed: { // field return type name
