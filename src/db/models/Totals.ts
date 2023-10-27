@@ -1,5 +1,5 @@
 import moment from "moment";
-import type { Db } from "mongodb"
+import { Db, ObjectId } from "mongodb"
 import { validateObjectProperty } from "../../helpers.js";
 
 export interface TotalsModel {
@@ -24,6 +24,7 @@ export const validateTotals = (totals: any): totals is TotalsModel => {
 
 export async function getTotals(
   db: Db,
+  userID: string,
   { startInterval, endInterval }: TotalsProps
 ): Promise<TotalsModel> {
   const res = await db.collection('records')
@@ -31,6 +32,7 @@ export async function getTotals(
       {
         $match: {
           $and: [
+            { userID: new ObjectId(userID) },
             { eatenAt: { $lte: moment(endInterval).toDate() } },
             { eatenAt: { $gt: moment(startInterval).toDate() } },
           ]
