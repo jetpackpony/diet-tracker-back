@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import jwt from "jsonwebtoken";
-import type { Context } from './context';
+import { isContextLoggedIn, type Context, type ContextLoggedIn } from './context.js';
 import { validateObjectProperty } from './helpers.js';
 
 export interface Session {
@@ -19,7 +19,7 @@ export const encodeToken = (payload: Session): EncodeResult => {
   return { token: jwt.sign(payload, JWT_SECRET) };
 };
 
-const isSession = (session: any): session is Session => {
+export const isSession = (session: any): session is Session => {
   validateObjectProperty(session, "userId", "string");
   validateObjectProperty(session, "userName", "string");
   return session;
@@ -53,9 +53,9 @@ export const encodePassword = (password: string): string => {
  * @returns 
  */
 export const withLogin =
-  <A, B, C>(next: (_root: A, _args: B, ctx: Context) => C) =>
+  <A, B, C>(next: (_root: A, _args: B, ctx: ContextLoggedIn) => C) =>
     (_root: A, _args: B, ctx: Context): C => {
-      if (!ctx.session) {
+      if (!isContextLoggedIn(ctx)) {
         throw new Error("You need to login to access this query");
       }
       return next(_root, _args, ctx);
