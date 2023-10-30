@@ -30,6 +30,10 @@ To install an npm package:
       ```
 
 ## Testing production build locally
+* Build TypeScript:
+  ```bash
+  npm run build
+  ```
 * Build the production docker image:
   ```bash
   npm run docker:build
@@ -45,6 +49,10 @@ To install an npm package:
 * Login into docker hub:
   ```bash
   docker login
+  ```
+* Build TypeScript:
+  ```bash
+  npm run build
   ```
 * Build the app image and push to repo:
   > ### This repo is public so be careful to not leave any secrests in the image! Use `.dockerignore` to ignore files from local directory
@@ -132,3 +140,17 @@ services:
 
   Drop the dietTrackerDEV database, then use --nsFrom="dietTracker.*" --nsTo="dietTrackerDEV.*" when restoring.
   Then Change the user/password to the DEV ones
+
+## Creating more users in the database
+
+  Shell into the container:
+
+  ```bash
+  docker exec -it diet-tracker-backups /bin/sh
+  ```
+
+  Run the script:
+
+  ```bash
+  npm run createOrUpdateUser:prod -- -u $USERNAME -p $PASSWORD
+  ```
