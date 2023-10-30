@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "docker-compose -f docker-compose.dev.yml up --build app",
+    "start:local:prod": "docker compose -f docker-compose.prod.local.yml up",
     "start:update": "docker-compose -f docker-compose.dev.yml up --build -V app",
     "start:dev": "nodemon src/index.ts",
     "start:prod": "node ./build/index.js",
@@ -15,16 +16,22 @@
     "backup:prod": "node ./build/backup/backupCron.js",
     "backupOnce:prod": "node ./build/backup/backupOnce.js",
     "restore:prod": "node ./build/backup/restore.js",
+    "createOrUpdateUser:prod": "node ./build/scripts/createOrUpdateUser.js",
+    "migrationAddUserIDsToRecords:prod": "node ./build/scripts/migrationAddUserIDsToRecords.js",
     "backup:dev": "node --loader ts-node/esm/transpile-only src/backup/backupCron.ts",
     "backupOnce:dev": "node --loader ts-node/esm/transpile-only src/backup/backupOnce.ts",
-    "restore:dev": "node --loader ts-node/esm/transpile-only src/backup/restore.ts"
+    "restore:dev": "node --loader ts-node/esm/transpile-only src/backup/restore.ts",
+    "createOrUpdateUser:dev": "node --loader ts-node/esm/transpile-only src/scripts/createOrUpdateUser.ts",
+    "migrationAddUserIDsToRecords:dev": "node --loader ts-node/esm/transpile-only src/scripts/migrationAddUserIDsToRecords.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@commander-js/extra-typings": "^11.1.0",
     "@googleapis/drive": "^3.0.1",
     "apollo-server": "^3.9.0",
+    "commander": "^11.1.0",
     "escape-string-regexp": "^5.0.0",
     "graphql": "^16.5.0",
     "graphql-scalars": "^1.17.0",

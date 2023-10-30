@@ -1,5 +1,5 @@
 import moment, { Moment } from "moment";
-import type { Db, Document } from "mongodb";
+import { ObjectId, type Db, type Document } from "mongodb";
 import { RecordModel, validateRecord } from "./Record.js";
 
 export interface RecordFeedModel {
@@ -34,8 +34,17 @@ const unpackCursor = (cursor: string): FeedCursor => {
   };
 };
 
-const buildPipeline = (curs: FeedCursor, limit: number): Document[] => {
-  const pipeline = [];
+const buildPipeline = (userID: string, curs: FeedCursor, limit: number): Document[] => {
+  const pipeline: Document[] = [];
+  // Filter by userID
+  pipeline.push(
+    {
+      $match: {
+        userID: new ObjectId(userID)
+      }
+    }
+  );
+  // Filter by cursor bounds if cursor was specified
   if (curs.success) {
     pipeline.push(
       {
@@ -53,15 +62,18 @@ const buildPipeline = (curs: FeedCursor, limit: number): Document[] => {
       }
     );
   }
+  // Sort by date
   pipeline.push({
     $sort: {
       "eatenAt": -1,
       "createdAt": -1
     }
   });
+  // Limit
   pipeline.push({
     $limit: limit
   });
+  // Dereference foodItem keys
   pipeline.push({
     $lookup: {
       from: "foodItems",
@@ -70,6 +82,7 @@ const buildPipeline = (curs: FeedCursor, limit: number): Document[] => {
       as: "foodItem"
     }
   });
+  // Add foodItems' data into the result
   pipeline.push({
     $unwind: {
       path: "$foodItem",
@@ -81,10 +94,11 @@ const buildPipeline = (curs: FeedCursor, limit: number): Document[] => {
 
 export async function getRecordFeed(
   db: Db,
+  userID: string,
   { cursor = "", limit = 50 }
 ): Promise<RecordFeedModel> {
   const records = await db.collection("records")
-    .aggregate(buildPipeline(unpackCursor(cursor), limit))
+    .aggregate(buildPipeline(userID, unpackCursor(cursor), limit))
     .toArray()
     .then((recs) => recs.filter(validateRecord));
 

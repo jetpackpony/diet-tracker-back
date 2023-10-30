@@ -1,10 +1,11 @@
 import type { Db } from "mongodb";
 import { ObjectId } from "mongodb";
 import { validateObjectProperty } from "../../helpers.js";
-import { FoodItemModel, validateFoodItem } from "./FoodItem.js";
+import { FoodItemModel, getFoodItemsByIDs, validateFoodItem } from "./FoodItem.js";
 
 export interface RecordModel {
   _id: ObjectId,
+  userID: ObjectId,
   foodItem: FoodItemModel,
   weight: number,
   eatenAt: Date,
@@ -28,6 +29,7 @@ export interface RecordModifyProps {
 
 export const validateRecord = (record: any): record is RecordModel => {
   validateObjectProperty(record, "_id", ObjectId);
+  validateObjectProperty(record, "userID", ObjectId);
   validateObjectProperty(record, "weight", "number");
   validateObjectProperty(record, "eatenAt", Date);
   validateObjectProperty(record, "createdAt", Date);
@@ -35,12 +37,13 @@ export const validateRecord = (record: any): record is RecordModel => {
   return record;
 };
 
-export async function getRecordById(db: Db, id: string): Promise<RecordModel | null> {
+export async function getRecordById(db: Db, userID: string, id: string): Promise<RecordModel | null> {
   const docs = await db.collection("records")
     .aggregate([
       {
         $match: {
-          _id: new ObjectId(id)
+          _id: new ObjectId(id),
+          userID: new ObjectId(userID)
         }
       },
       {
@@ -65,16 +68,22 @@ export async function getRecordById(db: Db, id: string): Promise<RecordModel | n
 
 export async function addRecord(
   db: Db,
+  userID: string,
   { foodItemID, weight, eatenAt, createdAt }: RecordCreateProps
 ): Promise<RecordModel> {
+  const foodItem = await getFoodItemsByIDs(db, userID, [foodItemID], 1);
+  if (foodItem.length < 1) {
+    throw new Error(`Can't add a record for non-existing food item ${foodItemID} by user ${userID}`);
+  }
   const inserted = await db.collection("records")
     .insertOne({
+      userID: new ObjectId(userID),
       foodItemID: new ObjectId(foodItemID),
       weight,
       eatenAt,
       createdAt
     });
-  const rec = await getRecordById(db, inserted.insertedId.toString());
+  const rec = await getRecordById(db, userID, inserted.insertedId.toString());
   if (!rec) {
     throw new Error("Couldn't create a new record");
   }
@@ -83,11 +92,12 @@ export async function addRecord(
 
 export async function updateRecord(
   db: Db,
+  userID: string,
   { id, weight }: RecordModifyProps
 ): Promise<RecordModel> {
   const res = await db.collection("records")
     .findOneAndUpdate(
-      { _id: new ObjectId(id) },
+      { _id: new ObjectId(id), userID: new ObjectId(userID) },
       { $set: { weight } },
       { returnDocument: "after" }
     );
@@ -95,17 +105,23 @@ export async function updateRecord(
     throw new Error("Couldn't update record");
   }
 
-  const rec = await getRecordById(db, id);
+  const rec = await getRecordById(db, userID, id);
   if (!rec) {
-    throw new Error(`Couldn't get record with id ${id}`);
+    throw new Error(`Couldn't update record with id ${id} by user ${userID}`);
   }
   return rec;
 };
 
-export async function deleteRecord(db: Db, id: string): Promise<string> {
+export async function deleteRecord(db: Db, userID: string, id: string): Promise<string> {
   return db.collection("records")
     .deleteOne(
-      { _id: new ObjectId(id) },
+      {
+        _id: new ObjectId(id),
+        userID: new ObjectId(userID)
+      },
     )
-    .then(() => id);
+    .then(() => id)
+    .catch(() => {
+      throw new Error(`Couldn't delete record with id ${id} by user ${userID}`);
+    });
 };

@@ -28,7 +28,7 @@ export const TotalsQuery = extendType({
         endInterval: dateArg()
       },
       resolve: withLogin(async function resolve(_root, _args, ctx) {
-        return getTotals(ctx.db, _args);
+        return getTotals(ctx.db, ctx.session.userId, _args);
       })
     });
   }

@@ -21,6 +21,7 @@ type FoodItem {
   id: ID!
   protein: Float!
   title: String!
+  userID: ID!
 }
 
 type LoginResult {
@@ -53,6 +54,7 @@ type Record {
   eatenAt: DateTime!
   foodItem: FoodItem!
   id: ID!
+  userID: ID!
   weight: Int!
 }
 

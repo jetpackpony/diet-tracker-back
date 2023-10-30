@@ -82,6 +82,7 @@ export interface NexusGenFieldTypes {
     id: string; // ID!
     protein: number; // Float!
     title: string; // String!
+    userID: string; // ID!
   }
   LoginResult: { // field return type
     token: string; // String!
@@ -110,6 +111,7 @@ export interface NexusGenFieldTypes {
     eatenAt: NexusGenScalars['DateTime']; // DateTime!
     foodItem: NexusGenRootTypes['FoodItem']; // FoodItem!
     id: string; // ID!
+    userID: string; // ID!
     weight: number; // Int!
   }
   RecordFeed: { // field return type
@@ -152,6 +154,7 @@ export interface NexusGenFieldTypeNames {
     id: 'ID'
     protein: 'Float'
     title: 'String'
+    userID: 'ID'
   }
   LoginResult: { // field return type name
     token: 'String'
@@ -180,6 +183,7 @@ export interface NexusGenFieldTypeNames {
     eatenAt: 'DateTime'
     foodItem: 'FoodItem'
     id: 'ID'
+    userID: 'ID'
     weight: 'Int'
   }
   RecordFeed: { // field return type name

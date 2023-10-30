@@ -16,6 +16,11 @@ export const Record = objectType({
         return record._id.toString();
       }
     });
+    t.id("userID", {
+      resolve(record) {
+        return record.userID.toString();
+      }
+    });
     t.int("weight");
     t.field("foodItem", { type: nonNull("FoodItem") });
     t.field("eatenAt", { type: nonNull("DateTime") });
@@ -44,13 +49,13 @@ export const RecordQuery = extendType({
         id: idArg()
       },
       resolve: withLogin(async function resolve(_root, _args, ctx) {
-        return getRecordById(ctx.db, _args.id);
+        return getRecordById(ctx.db, ctx.session.userId, _args.id);
       })
     });
     t.field("getAllRecords", {
       type: list("Record"),
       resolve: withLogin(async function resolve(_root, _args, ctx) {
-        return (await getRecordFeed(ctx.db, {})).records;
+        return (await getRecordFeed(ctx.db, ctx.session.userId, {})).records;
       })
     });
     t.field("recordsFeed", {
@@ -60,7 +65,7 @@ export const RecordQuery = extendType({
         limit: intArg()
       },
       resolve: withLogin(async function resolve(_root, _args, ctx) {
-        return getRecordFeed(ctx.db, _args);
+        return getRecordFeed(ctx.db, ctx.session.userId, _args);
       })
     });
   }
@@ -78,7 +83,7 @@ export const RecordMutation = extendType({
         createdAt: dateArg()
       },
       resolve: withLogin(async function resolve(_root, _args, ctx) {
-        return addRecord(ctx.db, _args);
+        return addRecord(ctx.db, ctx.session.userId, _args);
       })
     });
     t.field("addRecordWithFoodItem", {
@@ -94,8 +99,8 @@ export const RecordMutation = extendType({
         createdAt: dateArg()
       },
       resolve: withLogin(async function resolve(_root, _args, ctx) {
-        const foodItem = await insertFoodItem(ctx.db, _args);
-        return addRecord(ctx.db, {
+        const foodItem = await insertFoodItem(ctx.db, ctx.session.userId, _args);
+        return addRecord(ctx.db, ctx.session.userId, {
           foodItemID: foodItem._id.toString(),
           ..._args
         });
@@ -108,7 +113,7 @@ export const RecordMutation = extendType({
         weight: intArg()
       },
       resolve: withLogin(async function resolve(_root, _args, ctx) {
-        return updateRecord(ctx.db, _args);
+        return updateRecord(ctx.db, ctx.session.userId, _args);
       })
     });
     t.field("deleteRecord", {
@@ -117,7 +122,7 @@ export const RecordMutation = extendType({
         id: idArg()
       },
       resolve: withLogin(async function resolve(_root, _args, ctx) {
-        return deleteRecord(ctx.db, _args.id);
+        return deleteRecord(ctx.db, ctx.session.userId, _args.id);
       })
     });
   }

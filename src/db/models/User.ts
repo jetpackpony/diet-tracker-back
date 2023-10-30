@@ -25,13 +25,21 @@ export const validateUser = (user: any): user is UserModel => {
   return user;
 };
 
-export async function login(db: Db, { userName, password }: UserProps): Promise<LoginResultModel> {
+export const getUserByUserName = async (db: Db, userName: UserProps["userName"]) => {
   const user = await db.collection("users").findOne({ userName });
   if (!user) {
-    throw new Error(`Can't find user "${userName}"`);
+    return undefined;
   }
   if (!validateUser(user)) {
-    throw new Error(`User model is incorrect: "${userName}"`);
+    return undefined;
+  }
+  return user;
+};
+
+export async function login(db: Db, { userName, password }: UserProps): Promise<LoginResultModel> {
+  const user = await getUserByUserName(db, userName);
+  if (user === undefined) {
+    throw new Error(`Couldn't find user by username '${userName}'`);
   }
   if (user.passHash !== encodePassword(password)) {
     throw new Error("Incorrect password");
@@ -41,4 +49,52 @@ export async function login(db: Db, { userName, password }: UserProps): Promise<
     user,
     token: encodeToken(session).token
   };
+};
+
+export async function createOrUpdateUser(db: Db, { userName, password }: UserProps): Promise<UserModel> {
+  if (userName == undefined) {
+    throw new Error("App user name is not set. Won't connect to the DB like this!");
+  }
+  if (password == undefined) {
+    throw new Error("App user password is not set. Won't connect to the DB like this!");
+  }
+  const user = await db.collection("users").findOne({ userName });
+  if (!user || !validateUser(user)) {
+    const inserted = await db.collection("users").insertOne({
+      userName,
+      passHash: encodePassword(password)
+    });
+    if (!inserted.insertedId) {
+      throw new Error(`Failed to create a user "${userName}"!`);
+    }
+    const newUser = await db.collection("users").findOne({
+      _id: inserted.insertedId
+    });
+    if (!validateUser(newUser)) {
+      throw new Error("Failed to retrieve an inserted user!");
+    }
+    return newUser;
+  }
+
+  if (user.passHash !== encodePassword(password)) {
+    const newUser = await db.collection("users")
+      .findOneAndUpdate(
+        {
+          _id: user._id,
+        },
+        {
+          $set: {
+            passHash: encodePassword(password)
+          }
+        },
+        {
+          returnDocument: "after"
+        }
+      );
+    if (!newUser || !validateUser(newUser)) {
+      throw new Error("Failed to update a default user!");
+    }
+    return newUser;
+  }
+  return user;
 };

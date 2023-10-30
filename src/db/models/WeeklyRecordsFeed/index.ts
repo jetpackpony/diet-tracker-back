@@ -26,10 +26,11 @@ export interface WeeklyRecordsFeedModel {
 
 export async function getWeeklyRecordsFeed(
   db: Db,
+  userID: string,
   { cursor = "", limit = 1 }
 ): Promise<WeeklyRecordsFeedModel> {
   const cursorRange = getCursorRange(cursor, limit);
-  const pipeline = buildPipelineForWeeklyFeed(cursorRange);
+  const pipeline = buildPipelineForWeeklyFeed(userID, cursorRange);
   const weeks = await db.collection("records")
     .aggregate(pipeline)
     .toArray()

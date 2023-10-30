@@ -46,6 +46,8 @@ services:
       - ./mongo/init-scripts/dev:/docker-entrypoint-initdb.d
     expose:
       - 27017
+    ports:
+      - 27017:27017
 
 volumes:
   diet-tracker-data-volume:

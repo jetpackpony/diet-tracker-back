@@ -15,6 +15,11 @@ export const FoodItem = objectType({
         return foodItem._id.toString();
       }
     });
+    t.id("userID", {
+      resolve(foodItem) {
+        return foodItem.userID.toString();
+      }
+    });
     t.string("title");
     t.float("calories");
     t.float("protein");
@@ -29,7 +34,7 @@ export const FoodItemQuery = extendType({
     t.field("foodItems", {
       type: list("FoodItem"),
       resolve: withLogin(async function resolve(_root, _args, ctx) {
-        return getFoodItems(ctx.db);
+        return getFoodItems(ctx.db, ctx.session.userId);
       })
     });
     t.field("getFoodItems", {
@@ -38,7 +43,7 @@ export const FoodItemQuery = extendType({
         ids: list(idArg())
       },
       resolve: withLogin(async function resolve(_root, _args, ctx) {
-        return getFoodItemsByIDs(ctx.db, _args.ids);
+        return getFoodItemsByIDs(ctx.db, ctx.session.userId, _args.ids);
       })
     });
     t.field("filterFoodItems", {
@@ -48,7 +53,7 @@ export const FoodItemQuery = extendType({
         limit: intArg()
       },
       resolve: withLogin(async function resolve(_root, _args, ctx) {
-        return filterFoodItems(ctx.db, _args);
+        return filterFoodItems(ctx.db, ctx.session.userId, _args);
       })
     });
   }
@@ -67,7 +72,7 @@ export const FoodItemMutation = extendType({
         carbs: floatArg()
       },
       resolve: withLogin(async function resolve(_root, _args, ctx) {
-        return insertFoodItem(ctx.db, _args);
+        return insertFoodItem(ctx.db, ctx.session.userId, _args);
       })
     });
   }

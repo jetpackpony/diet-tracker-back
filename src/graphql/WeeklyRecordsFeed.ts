@@ -53,7 +53,7 @@ export const WeeklyRecordsFeedQuery = extendType({
         limit: intArg()
       },
       resolve: withLogin(async function resolve(_root, _args, ctx) {
-        return getWeeklyRecordsFeed(ctx.db, _args);
+        return getWeeklyRecordsFeed(ctx.db, ctx.session.userId, _args);
       })
     })
   }

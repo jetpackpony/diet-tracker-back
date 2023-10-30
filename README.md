@@ -36,7 +36,7 @@ To install an npm package:
   ```
 * Run the containers:
   ```bash
-  docker compose -f docker-compose.prod.local.yml up
+  npm run start:local:prod
   ```
 
 
