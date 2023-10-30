@@ -25,13 +25,21 @@ export const validateUser = (user: any): user is UserModel => {
   return user;
 };
 
-export async function login(db: Db, { userName, password }: UserProps): Promise<LoginResultModel> {
+export const getUserByUserName = async (db: Db, userName: UserProps["userName"]) => {
   const user = await db.collection("users").findOne({ userName });
   if (!user) {
-    throw new Error(`Can't find user "${userName}"`);
+    return undefined;
   }
   if (!validateUser(user)) {
-    throw new Error(`User model is incorrect: "${userName}"`);
+    return undefined;
+  }
+  return user;
+};
+
+export async function login(db: Db, { userName, password }: UserProps): Promise<LoginResultModel> {
+  const user = await getUserByUserName(db, userName);
+  if (user === undefined) {
+    throw new Error(`Couldn't find user by username '${userName}'`);
   }
   if (user.passHash !== encodePassword(password)) {
     throw new Error("Incorrect password");
